@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Sample Detail | LQIS{% endblock %}
+{% block content %}
+<h4 class="mb-3">Sample Detail</h4>
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card"><div class="card-body">
+      <p><strong>Traceability:</strong> {{ sample.factory }} → {{ sample.tea_buying_center }} → {{ sample.supplier }} → {{ sample.batch }}</p>
+      <div class="row g-3 align-items-center">
+        <div class="col-md-4">{% if sample.leaf_image %}<img src="{{ sample.leaf_image.url }}" class="img-fluid rounded evidence-thumb w-100 h-auto" data-full="{{ sample.leaf_image.url }}">{% endif %}</div>
+        <div class="col-md-8">
+          <p class="mb-1"><strong>Predicted:</strong> {{ sample.predicted_pluck_class }} / {{ sample.predicted_pluck_score }} ({{ sample.prediction_confidence }}% confidence)</p>
+          <p class="mb-1"><strong>Manual Override:</strong> {{ sample.manual_override_pluck_score|default:'None' }}</p>
+          <p class="mb-1"><strong>Moisture:</strong> {{ sample.moisture_pct }}% | <strong>Foreign:</strong> {{ sample.foreign_matter_pct }}%</p>
+          <p class="mb-1"><strong>Batch Quality Score:</strong> {{ sample.quality_score }} <span class="badge-status status-{{ sample.quality_status }}">{{ sample.quality_status }}</span></p>
+          <p class="mb-0"><strong>Decision:</strong> <span class="badge bg-secondary">{{ sample.decision|default:'Pending' }}</span></p>
+          <small class="text-muted d-block mt-1">Submitted by {{ sample.inspector.username }} at {{ sample.created_at }}</small>
+          {% if sample.decision_by %}<small class="text-muted d-block mt-1">By {{ sample.decision_by.username }} at {{ sample.decision_at }}</small>{% endif %}
+        </div>
+      </div>
+    </div></div>
+
+    <div class="card mt-3"><div class="card-body">
+      <h6>Decision History</h6>
+      {% if sample.decision_history.all %}
+      <ul class="list-group list-group-flush">
+        {% for h in sample.decision_history.all %}
+        <li class="list-group-item"><strong>{{ h.decision }}</strong> — {{ h.reason|default:'No reason' }} <small class="text-muted">({{ h.decided_by|default:'Unknown' }} @ {{ h.decided_at }})</small></li>
+        {% endfor %}
+      </ul>
+      {% else %}<div class="empty-state">No decision actions recorded yet.</div>{% endif %}
+    </div></div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card mb-3"><div class="card-body">
+      <h6>Alerts</h6>
+      {% for a in sample.alerts.all %}
+      <div class="alert {% if a.alert_type == 'LOW_PLUCK' %}alert-warning{% elif a.alert_type == 'HIGH_FOREIGN' %}alert-orange{% else %}alert-danger{% endif %} py-2 mb-2">{{ a.alert_type }} - {{ a.message }}</div>
+      {% empty %}<div class="empty-state">No alerts.</div>{% endfor %}
+    </div></div>
+
+    {% if can_decide %}
+    <div class="card"><div class="card-body">
+      <h6>Supervisor Decision</h6>
+      <form method="post" action="{% url 'sampling:sample-decision' sample.id %}">{% csrf_token %}{{ decision_form.as_p }}<button class="btn btn-success w-100">Save Decision</button></form>
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="modal fade" id="imgModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-body p-2"><img id="modalImg" class="img-fluid w-100 rounded"></div></div></div></div>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script>
+const modal = new bootstrap.Modal(document.getElementById('imgModal'));
+const modalImg = document.getElementById('modalImg');
+document.querySelectorAll('.evidence-thumb').forEach(img => {
+  img.addEventListener('click', () => { modalImg.src = img.dataset.full; modal.show(); });
+});
+</script>
+{% endblock %}

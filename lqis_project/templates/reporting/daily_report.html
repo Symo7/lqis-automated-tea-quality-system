@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Reporting | LQIS{% endblock %}
+{% block content %}
+<h4 class="mb-3">Operational Reporting</h4>
+
+<form class="card card-body mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-2"><label class="form-label">From</label><input type="date" name="start_date" class="form-control" value="{{ filters.start_date }}"></div>
+    <div class="col-md-2"><label class="form-label">To</label><input type="date" name="end_date" class="form-control" value="{{ filters.end_date }}"></div>
+    <div class="col-md-2"><label class="form-label">Factory</label><select name="factory" class="form-select"><option value="">All</option>{% for f in factories %}<option value="{{ f.id }}" {% if filters.factory == f.id|stringformat:'s' %}selected{% endif %}>{{ f.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-2"><label class="form-label">Center</label><select name="center" class="form-select"><option value="">All</option>{% for c in centers %}<option value="{{ c.id }}" {% if filters.center == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-2"><label class="form-label">Supplier</label><select name="supplier" class="form-select"><option value="">All</option>{% for s in suppliers %}<option value="{{ s.id }}" {% if filters.supplier == s.id|stringformat:'s' %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-2"><label class="form-label">Decision</label>
+      <select name="decision" class="form-select">
+        <option value="" {% if not filters.decision %}selected{% endif %}>All</option>
+        <option value="UNDECIDED" {% if filters.decision == 'UNDECIDED' %}selected{% endif %}>Undecided</option>
+        <option value="Approve Batch" {% if filters.decision == 'Approve Batch' %}selected{% endif %}>Approve</option>
+        <option value="Reject Batch" {% if filters.decision == 'Reject Batch' %}selected{% endif %}>Reject</option>
+        <option value="Send for Re-sorting" {% if filters.decision == 'Send for Re-sorting' %}selected{% endif %}>Re-sort</option>
+        <option value="Hold for Review" {% if filters.decision == 'Hold for Review' %}selected{% endif %}>Hold</option>
+      </select>
+    </div>
+    <div class="col-md-2"><label class="form-label">Alert</label>
+      <select name="alert_type" class="form-select">
+        <option value="" {% if not filters.alert_type %}selected{% endif %}>All</option>
+        <option value="LOW_PLUCK" {% if filters.alert_type == 'LOW_PLUCK' %}selected{% endif %}>LOW_PLUCK</option>
+        <option value="HIGH_MOISTURE" {% if filters.alert_type == 'HIGH_MOISTURE' %}selected{% endif %}>HIGH_MOISTURE</option>
+        <option value="HIGH_FOREIGN" {% if filters.alert_type == 'HIGH_FOREIGN' %}selected{% endif %}>HIGH_FOREIGN</option>
+      </select>
+    </div>
+    <div class="col-12 d-flex flex-wrap gap-2">
+      <button class="btn btn-success">Apply Filters</button>
+      <button class="btn btn-outline-success" name="export" value="csv">Export CSV</button>
+      <button class="btn btn-outline-success" name="export" value="xlsx">Export Excel</button>
+      <button class="btn btn-outline-success" name="export" value="pdf">Export PDF</button>
+    </div>
+  </div>
+</form>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Samples</div><div class="stat-value">{{ summary.total }}</div></div></div></div>
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Average Quality</div><div class="stat-value">{{ summary.avg_quality|default:0|floatformat:1 }}</div></div></div></div>
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Reject Count</div><div class="stat-value">{{ summary.rejects }}</div></div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Decision Summary</h6>{% for d in decision_summary %}<span class="badge bg-secondary me-1">{{ d.decision|default:'Pending' }}: {{ d.total }}</span>{% empty %}<span class="text-muted">No decisions.</span>{% endfor %}</div></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Alert Summary</h6>{% for a in alert_summary %}<span class="badge bg-danger-subtle text-danger-emphasis me-1">{{ a.alert_type }}: {{ a.total }}</span>{% empty %}<span class="text-muted">No alerts.</span>{% endfor %}</div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Weekly Quality Summary</h6>
+    {% if weekly_summary %}<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Date</th><th>Avg Quality</th><th>Samples</th><th>Rejects</th></tr></thead><tbody>{% for w in weekly_summary %}<tr><td>{{ w.intake_timestamp__date }}</td><td>{{ w.avg_quality|floatformat:1 }}</td><td>{{ w.total }}</td><td>{{ w.rejects }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state">No weekly data.</div>{% endif %}
+  </div></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Buying Center Performance Summary</h6>
+    {% if buying_center_summary %}<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Center</th><th>Avg Quality</th><th>Samples</th><th>Alerts</th></tr></thead><tbody>{% for b in buying_center_summary %}<tr><td>{{ b.tea_buying_center__name }}</td><td>{{ b.avg_quality|floatformat:1 }}</td><td>{{ b.total }}</td><td>{{ b.alerts }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state">No center summary data.</div>{% endif %}
+  </div></div></div>
+</div>
+
+<div class="card mb-3"><div class="card-body"><h6>Rejection Summary by Factory</h6>
+  {% if rejection_summary %}<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Factory</th><th>Rejects</th><th>Total</th><th>Reject %</th></tr></thead><tbody>{% for r in rejection_summary %}<tr><td>{{ r.factory__name }}</td><td>{{ r.rejects }}</td><td>{{ r.total }}</td><td>{% widthratio r.rejects r.total 100 %}%</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state">No rejection summary available.</div>{% endif %}
+</div></div>
+
+{% if records %}
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+  <thead><tr><th>Image</th><th>Timestamp</th><th>Factory</th><th>Center</th><th>Supplier</th><th>Batch</th><th>Pluck</th><th>M/F</th><th>Quality</th><th>Decision</th><th>Inspector</th></tr></thead>
+  <tbody>
+  {% for r in records %}
+  <tr>
+    <td>{% if r.leaf_image %}<img src="{{ r.leaf_image.url }}" class="evidence-thumb" data-full="{{ r.leaf_image.url }}">{% endif %}</td>
+    <td>{{ r.intake_timestamp }}</td><td>{{ r.factory.code }}</td><td>{{ r.tea_buying_center.code }}</td><td>{{ r.supplier.code }}</td><td>{{ r.batch.batch_code }}</td>
+    <td>{{ r.effective_pluck_score }}</td><td>{{ r.moisture_pct }} / {{ r.foreign_matter_pct }}</td>
+    <td><span class="badge-status status-{{ r.quality_status }}">{{ r.quality_status }}</span></td><td>{{ r.decision|default:'Pending' }}</td><td>{{ r.inspector.username }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<div class="empty-state">No records for selected filters.</div>{% endif %}
+
+<div class="modal fade" id="imgModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-body p-2"><img id="modalImg" class="img-fluid w-100 rounded"></div></div></div></div>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script>
+const modal = new bootstrap.Modal(document.getElementById('imgModal'));
+const modalImg = document.getElementById('modalImg');
+document.querySelectorAll('.evidence-thumb').forEach(img => img.addEventListener('click', () => {modalImg.src = img.dataset.full; modal.show();}));
+</script>
+{% endblock %}

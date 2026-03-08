@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}LQIS Operations Hub{% endblock %}
+{% block content %}
+<div class="card hero-gradient mb-4">
+  <div class="card-body py-4">
+    <h3 class="mb-2">LQIS Operations Hub</h3>
+    <p class="mb-2">Role: <span class="badge bg-success">{{ role }}</span> &middot; Sampling Point: <strong>Factory Intake</strong></p>
+    <a class="btn btn-success" href="{% url landing %}">Open Primary Workspace</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Total Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></div>
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Pending Decisions</div><div class="stat-value" data-counter>{{ pending_decisions }}</div></div></div></div>
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Recent Alerts</div><div class="stat-value" data-counter>{{ recent_alerts|length }}</div></div></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card"><div class="card-body">
+      <h5>Recent Submissions</h5>
+      {% if recent_samples %}
+      <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Batch</th><th>Factory</th><th>Quality</th><th></th></tr></thead><tbody>
+      {% for s in recent_samples %}
+      <tr><td>{{ s.batch.batch_code }}</td><td>{{ s.factory.code }}</td><td><span class="badge-status status-{{ s.quality_status }}">{{ s.quality_status }}</span></td><td><a class="btn btn-sm btn-outline-success" href="{% url 'sampling:sample-detail' s.id %}">View</a></td></tr>
+      {% endfor %}
+      </tbody></table></div>
+      {% else %}<div class="empty-state">No samples recorded yet.</div>{% endif %}
+    </div></div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card"><div class="card-body">
+      <h5>Alert Summary</h5>
+      {% if recent_alerts %}
+        {% for a in recent_alerts %}
+        <div class="alert {% if a.alert_type == 'LOW_PLUCK' %}alert-warning{% elif a.alert_type == 'HIGH_FOREIGN' %}alert-orange{% else %}alert-danger{% endif %} py-2 mb-2">
+          <small class="fw-semibold">{{ a.sample.factory.code }}</small> — {{ a.message }}
+        </div>
+        {% endfor %}
+      {% else %}<div class="empty-state">No active alerts.</div>{% endif %}
+    </div></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script>
+document.querySelectorAll('[data-counter]').forEach(el => {
+  const target = Number(el.textContent || '0');
+  let current = 0;
+  const step = Math.max(1, Math.ceil(target / 24));
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = current;
+  }, 20);
+});
+</script>
+{% endblock %}
