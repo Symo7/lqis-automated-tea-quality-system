@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Offline | LQIS{% endblock %}
+{% block content %}
+<div class="card"><div class="card-body text-center py-5">
+  <h3>You are offline</h3>
+  <p class="text-muted mb-3">Factory Intake Sampling can still be queued locally and synchronized once connectivity returns.</p>
+  <a href="{% url 'sampling:factory-intake-create' %}" class="btn btn-success">Open Factory Intake Sampling</a>
+</div></div>
+{% endblock %}

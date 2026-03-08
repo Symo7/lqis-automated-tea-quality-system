@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Supervisor Dashboard | LQIS{% endblock %}
+{% block content %}
+<h3 class="mb-3">Supervisor Dashboard</h3>
+<form class="row g-2 mb-3 align-items-end">
+  <div class="col-md-4">
+    <label class="form-label">Factory</label>
+    <select name="factory" class="form-select" onchange="this.form.submit()">
+      <option value="">All factories</option>
+      {% for f in factories %}<option value="{{ f.id }}" {% if selected_factory == f.id|stringformat:'s' %}selected{% endif %}>{{ f.name }}</option>{% endfor %}
+    </select>
+  </div>
+</form>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Today's Intake</div><div class="stat-value" data-counter>{{ summary.total|default:0 }}</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Pluck</div><div class="stat-value" data-counter>{{ summary.avg_pluck|default:0|floatformat:1 }}</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Moisture</div><div class="stat-value" data-counter>{{ summary.avg_moisture|default:0|floatformat:1 }}%</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Foreign</div><div class="stat-value" data-counter>{{ summary.avg_foreign|default:0|floatformat:1 }}%</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Quality Score</div><div class="stat-value" data-counter>{{ summary.avg_quality|default:0|floatformat:1 }}</div></div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-8"><div class="card"><div class="card-body"><h6>7-Day Trends (Pluck/Moisture/Foreign/Quality)</h6><canvas id="trendChart"></canvas></div></div></div>
+  <div class="col-lg-4"><div class="card"><div class="card-body"><h6>Alert Rules</h6>{% for t in thresholds %}<p class="small mb-2">{{ t.factory.name }}: Pluck &lt; {{ t.min_pluck }}, Moisture &gt; {{ t.max_moisture }}, Foreign &gt; {{ t.max_foreign_matter }}</p>{% empty %}<p class="small mb-0">Default: Pluck&lt;60, Moisture&gt;8, Foreign&gt;2</p>{% endfor %}
+<hr><h6>Alert Counts</h6>{% for a in alert_counts %}<span class="badge bg-secondary me-1">{{ a.alert_type }}: {{ a.total }}</span>{% empty %}<span class="text-muted">No alerts</span>{% endfor %}</div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Buying Center Performance (Quality Rank)</h6>
+    {% if buying_center_perf %}<div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Center</th><th>Avg Q</th><th>Reject %</th><th>Alerts</th><th>Pluck/M/F</th></tr></thead><tbody>
+      {% for b in buying_center_perf %}<tr><td>{{ b.tea_buying_center__name }}</td><td>{{ b.avg_quality|floatformat:1 }}</td><td>{% widthratio b.reject_count b.sample_count 100 %}%</td><td>{{ b.alert_count }}</td><td>{{ b.avg_pluck|floatformat:1 }} / {{ b.avg_moisture|floatformat:1 }} / {{ b.avg_foreign|floatformat:1 }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state">No buying center performance data.</div>{% endif %}
+  </div></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Supplier / Farmer Group Performance</h6>
+    {% if supplier_perf %}<div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Supplier</th><th>Avg Q</th><th>Reject %</th><th>Issues</th></tr></thead><tbody>
+      {% for s in supplier_perf %}<tr><td>{{ s.supplier__name }}</td><td>{{ s.avg_quality|floatformat:1 }}</td><td>{% widthratio s.reject_count s.sample_count 100 %}%</td><td>{{ s.issues }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state">No supplier data available.</div>{% endif %}
+  </div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Factory Comparison</h6>
+    {% if factory_comparison %}<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Factory</th><th>Avg Q</th><th>Samples</th><th>Reject %</th><th>Alerts</th></tr></thead><tbody>
+    {% for f in factory_comparison %}<tr><td>{{ f.factory__name }}</td><td>{{ f.avg_quality|floatformat:1 }}</td><td>{{ f.sample_count }}</td><td>{% widthratio f.reject_count f.sample_count 100 %}%</td><td>{{ f.alert_count }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state">No comparison data yet.</div>{% endif %}
+  </div></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Decision Breakdown</h6><canvas id="decisionChart"></canvas></div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Quality Score Distribution</h6><canvas id="qualityDistChart"></canvas></div></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Status Band Distribution</h6><canvas id="statusChart"></canvas></div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-8"><div class="card"><div class="card-body"><h6>Decision Trend (7 Days)</h6><canvas id="decisionTrendChart"></canvas></div></div></div>
+  <div class="col-lg-4"><div class="card"><div class="card-body"><h6>Recent Alerts</h6>
+      {% for a in recent_alerts %}
+      <div class="alert {% if a.alert_type == 'LOW_PLUCK' %}alert-warning{% elif a.alert_type == 'HIGH_FOREIGN' %}alert-orange{% else %}alert-danger{% endif %} py-2 mb-2">
+        {{ a.sample.factory.code }} — {{ a.alert_type }} — {{ a.message }}
+      </div>
+      {% empty %}<div class="empty-state">No alerts.</div>{% endfor %}
+  </div></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Decision Breakdown by Factory</h6>
+    {% if decision_by_factory %}<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Factory</th><th>Approve</th><th>Reject</th><th>Re-sort</th><th>Hold</th></tr></thead><tbody>
+    {% for r in decision_by_factory %}<tr><td>{{ r.factory__name }}</td><td>{{ r.approved }}</td><td>{{ r.rejected }}</td><td>{{ r.resort }}</td><td>{{ r.hold }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state">No decision data yet.</div>{% endif %}
+  </div></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-body"><h6>Decision Breakdown by Buying Center</h6>
+    {% if decision_by_center %}<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Center</th><th>Approve</th><th>Reject</th><th>Re-sort</th><th>Hold</th></tr></thead><tbody>
+    {% for r in decision_by_center %}<tr><td>{{ r.tea_buying_center__name }}</td><td>{{ r.approved }}</td><td>{{ r.rejected }}</td><td>{{ r.resort }}</td><td>{{ r.hold }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state">No center decision data yet.</div>{% endif %}
+  </div></div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function palette(){
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return dark ? {text:'#d7e4dc', grid:'#31433a'} : {text:'#385748', grid:'#d9e7de'};
+}
+let chartRefs=[];
+function buildCharts(){
+  chartRefs.forEach(c=>c.destroy()); chartRefs=[];
+  const p=palette();
+  const opts={plugins:{legend:{labels:{color:p.text}}},scales:{x:{ticks:{color:p.text},grid:{color:p.grid}},y:{ticks:{color:p.text},grid:{color:p.grid}}}};
+  chartRefs.push(new Chart(document.getElementById('trendChart'), {type:'line',data:{labels: {{ trend_labels|safe }},datasets:[
+      {label:'Pluck', data: {{ pluck_trend|safe }}, borderColor:'#2d6a4f', tension:.35},
+      {label:'Moisture', data: {{ moisture_trend|safe }}, borderColor:'#e63946', tension:.35},
+      {label:'Foreign', data: {{ foreign_trend|safe }}, borderColor:'#f77f00', tension:.35},
+      {label:'Quality', data: {{ quality_trend|safe }}, borderColor:'#40916c', tension:.35}
+  ]},options:opts}));
+  chartRefs.push(new Chart(document.getElementById('decisionChart'), {type:'doughnut', data:{labels: {{ decision_breakdown_labels|safe }}, datasets:[{data: {{ decision_breakdown_values|safe }}, backgroundColor:['#2d6a4f','#e63946','#f77f00','#577590','#adb5bd']}]}, options:{plugins:{legend:{labels:{color:p.text}}}}}));
+  chartRefs.push(new Chart(document.getElementById('qualityDistChart'), {type:'bar', data:{labels: {{ quality_distribution_labels|safe }}, datasets:[{label:'Samples', data: {{ quality_distribution_values|safe }}, backgroundColor:'#52b788'}]}, options:opts}));
+  chartRefs.push(new Chart(document.getElementById('statusChart'), {type:'pie', data:{labels: {{ status_distribution_labels|safe }}, datasets:[{data: {{ status_distribution_values|safe }}, backgroundColor:['#3a5a40','#74c69d','#f9c74f','#f94144']}]}, options:{plugins:{legend:{labels:{color:p.text}}}}}));
+  chartRefs.push(new Chart(document.getElementById('decisionTrendChart'), {type:'line', data:{labels: {{ decision_trend_labels|safe }}, datasets:[
+    {label:'Approve', data: {{ decision_trend_approved|safe }}, borderColor:'#2d6a4f', tension:.35},
+    {label:'Reject', data: {{ decision_trend_rejected|safe }}, borderColor:'#e63946', tension:.35},
+    {label:'Re-sort', data: {{ decision_trend_resort|safe }}, borderColor:'#f77f00', tension:.35},
+    {label:'Hold', data: {{ decision_trend_hold|safe }}, borderColor:'#577590', tension:.35}
+  ]}, options:opts}));
+}
+buildCharts();
+window.addEventListener('themeChanged', buildCharts);
+document.querySelectorAll('[data-counter]').forEach(el=>{const target=parseFloat(el.textContent)||0;let c=0;const step=Math.max(1,target/20);const i=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(i);}el.textContent=(target%1===0?Math.round(c):c.toFixed(1));},16);});
+</script>
+{% endblock %}

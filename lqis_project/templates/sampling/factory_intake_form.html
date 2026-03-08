@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Factory Intake Sampling | LQIS{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="mb-1">Factory Intake Sampling</h4>
+        <p class="text-muted mb-2"><strong>Sampling Point: Factory Intake</strong></p>
+        <div id="samplingConnectionNote" class="alert alert-success py-2 small">Online mode: submissions go directly to server.</div>
+        <form method="post" enctype="multipart/form-data" id="samplingForm">{% csrf_token %}
+          <div class="row g-2">
+            <div class="col-md-6">{{ form.factory.label_tag }}{{ form.factory }}</div>
+            <div class="col-md-6">{{ form.tea_buying_center.label_tag }}{{ form.tea_buying_center }}</div>
+            <div class="col-md-6">{{ form.supplier.label_tag }}{{ form.supplier }}</div>
+            <div class="col-md-6">{{ form.batch.label_tag }}{{ form.batch }}</div>
+            <div class="col-md-6">{{ form.intake_timestamp.label_tag }}{{ form.intake_timestamp }}</div>
+            <div class="col-md-6">{{ form.manual_override_pluck_score.label_tag }}{{ form.manual_override_pluck_score }}</div>
+            <div class="col-md-6">{{ form.moisture_pct.label_tag }}{{ form.moisture_pct }}</div>
+            <div class="col-md-6">{{ form.foreign_matter_pct.label_tag }}{{ form.foreign_matter_pct }}</div>
+            <div class="col-12">{{ form.notes.label_tag }}{{ form.notes }}</div>
+            <div class="col-12">{{ form.leaf_image.label_tag }}{{ form.leaf_image }}</div>
+          </div>
+          <div class="sticky-submit mt-3 d-flex gap-2">
+            <button class="btn btn-success btn-lg" id="submitBtn">Save Sample</button>
+            <a class="btn btn-outline-secondary btn-lg" href="{% url 'sampling:sample-list' %}">View Samples</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card mb-3"><div class="card-body">
+      <h6>Data Source</h6>
+      <ul class="mb-0 small">
+        <li>Pluck Score: Camera + AI-assisted estimate</li>
+        <li>Moisture %: Standard method (Oven Dry Method)</li>
+        <li>Foreign Matter %: Manual sorting + weighing</li>
+      </ul>
+    </div></div>
+    <div class="card mb-3"><div class="card-body">
+      <h6>Photo Evidence Preview</h6>
+      <img id="preview" class="img-fluid rounded border d-none" style="max-height:250px;object-fit:cover;">
+      <small class="text-muted d-block mt-2">Supports mobile camera capture and offline queueing.</small>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <h6>AI Prediction Preview</h6>
+      <div id="predictionBox" class="small text-muted">Upload an image to preview baseline AI prediction.</div>
+      <hr>
+      <h6>Quality Score Estimator</h6>
+      <div id="qualityPreview" class="small text-muted">Enter moisture/foreign values to estimate score before submit.</div>
+    </div></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script>
+const imageInput = document.getElementById('id_leaf_image');
+const preview = document.getElementById('preview');
+const predBox = document.getElementById('predictionBox');
+const qualityPreview = document.getElementById('qualityPreview');
+const moistureInput = document.getElementById('id_moisture_pct');
+const foreignInput = document.getElementById('id_foreign_matter_pct');
+const overrideInput = document.getElementById('id_manual_override_pluck_score');
+const factorySelect = document.getElementById('id_factory');
+const centerSelect = document.getElementById('id_tea_buying_center');
+const batchSelect = document.getElementById('id_batch');
+
+function estimateQuality(basePluck=70){
+  const pluck = Number(overrideInput?.value || basePluck || 70);
+  const m = Number(moistureInput?.value || 0);
+  const f = Number(foreignInput?.value || 0);
+  const moisturePenalty = Math.max(0, (m - 7) * 3.5);
+  const foreignPenalty = Math.max(0, f * 8);
+  const score = Math.max(0, Math.min(100, (pluck * 0.7) + (30 - moisturePenalty - foreignPenalty))).toFixed(2);
+  let status = 'Reject';
+  if (score >= 85) status = 'Excellent'; else if (score >= 70) status = 'Acceptable'; else if (score >= 50) status = 'Warning';
+  qualityPreview.innerHTML = `<strong>${score}</strong> / 100 — <span class="badge-status status-${status}">${status}</span>`;
+}
+
+async function refreshFactoryLinkedOptions(){
+  if (!navigator.onLine) return;
+  const f=factorySelect?.value;
+  if(!f) return;
+  try {
+    const res=await fetch(`/sampling/factory-options/${f}/`);
+    const data=await res.json();
+    if(centerSelect){centerSelect.innerHTML=''; data.centers.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.text=`${c.name} (${c.code})`;centerSelect.appendChild(o);});}
+    if(batchSelect){batchSelect.innerHTML=''; data.batches.forEach(b=>{const o=document.createElement('option');o.value=b.id;o.text=b.batch_code;batchSelect.appendChild(o);});}
+  } catch (_) {}
+}
+
+if(factorySelect){factorySelect.addEventListener('change', refreshFactoryLinkedOptions);}
+if(factorySelect && factorySelect.value){refreshFactoryLinkedOptions();}
+
+if (imageInput) {
+  imageInput.setAttribute('capture', 'environment');
+  imageInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    preview.src = URL.createObjectURL(file);
+    preview.classList.remove('d-none');
+
+    if (!navigator.onLine) {
+      predBox.innerHTML = '<span class="text-warning">Offline: AI preview unavailable now, but image will be queued for sync.</span>';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('leaf_image', file);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    const res = await fetch('{% url "sampling:prediction-preview" %}', {method:'POST', body: formData});
+    if (res.ok) {
+      const data = await res.json();
+      predBox.innerHTML = `<div class="fw-semibold">${data.predicted_pluck_class} (${data.predicted_pluck_score})</div><div>Confidence: ${data.confidence}%</div>`;
+      estimateQuality(data.predicted_pluck_score);
+    }
+  });
+}
+
+[moistureInput, foreignInput, overrideInput].forEach(el => el && el.addEventListener('input', () => estimateQuality()));
+estimateQuality();
+function updateConnectionNote(){
+  const note=document.getElementById('samplingConnectionNote');
+  if(!note) return;
+  if(navigator.onLine){note.className='alert alert-success py-2 small';note.textContent='Online mode: submissions go directly to server.';}
+  else {note.className='alert alert-warning py-2 small';note.textContent='Offline mode: submissions are queued locally and auto-sync later.';}
+}
+window.addEventListener('online', updateConnectionNote);
+window.addEventListener('offline', updateConnectionNote);
+updateConnectionNote();
+
+</script>
+{% endblock %}
