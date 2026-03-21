@@ -41,6 +41,12 @@ python manage.py backup_data
 python manage.py restore_data backups/lqis_backup_20260322_000000.json
 ```
 
+### ⚠️ Critical Restore Warnings
+- **This is destructive**: Restoring will overwrite existing database records in the targeted tables.
+- **Back up first**: Always run `backup_data` to save the *current* state before running `restore_data`.
+- **Test restore in staging before production**: Never practice your first restore during a live outage. Test it locally or on a staging branch first.
+- **Verify media references after restore**: `backup_data` only exports JSON records. If leaf images (stored in Cloudinary) are deleted or rotated from the bucket, restoring the JSON will only restore the URL reference. The images themselves will be broken links unless you also backed up the media bucket.
+
 ---
 
 ## 🆘 Rollback Strategy

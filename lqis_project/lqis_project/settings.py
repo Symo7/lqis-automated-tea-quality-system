@@ -40,9 +40,9 @@ if SENTRY_DSN:
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-phase-1-lqis-dev-key-change-me')
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', '*')
+ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost')
 if ALLOWED_HOSTS_ENV == '*':
     ALLOWED_HOSTS = ['*']
 else:
