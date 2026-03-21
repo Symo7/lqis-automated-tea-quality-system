@@ -13,10 +13,28 @@ load_dotenv()
 # Initialize Sentry early to capture any startup exceptions. Real deployment needs a DSN from sentry.io
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 if SENTRY_DSN:
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
-        traces_sample_rate=1.0, # Track 100% of performance spikes (N+1 queries/slow APIs)
-        profiles_sample_rate=1.0,
+        integrations=[
+            DjangoIntegration(
+                transaction_style="url",         # Group performance data by URL pattern
+                middleware_spans=True,            # Track middleware execution time
+            ),
+            LoggingIntegration(
+                level=None,                       # Capture breadcrumbs from all log levels
+                event_level="ERROR",              # Only create Sentry events for ERROR+
+            ),
+        ],
+        traces_sample_rate=1.0,                   # Track 100% of performance spikes
+        profiles_sample_rate=1.0,                 # Full CPU profiling
+        send_default_pii=False,                   # GDPR: never send user emails/IPs
+        # N+1 and slow query detection thresholds
+        _experiments={
+            "record_sql_params": True,            # Capture SQL parameters for debugging
+        },
     )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
