@@ -3,13 +3,26 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-5">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mb-4">
       <div class="card-body">
         <h4 class="mb-3">Sign In</h4>
         <form method="post">{% csrf_token %}
           {{ form.as_p }}
           <button class="btn btn-tea">Login</button>
         </form>
+      </div>
+    </div>
+    
+    <div class="card border-primary" style="border-width: 2px;">
+      <div class="card-header bg-primary text-white fw-bold">
+        <i class="bi bi-rocket-takeoff position-relative me-1" style="top: -1px;"></i> Product Demonstration
+      </div>
+      <div class="card-body bg-light">
+        <p class="small text-muted mb-3">Instantly explore the platform using pre-seeded sandbox accounts. No password required.</p>
+        <div class="d-grid gap-2">
+            <a href="{% url 'users:demo_login' role='inspector' %}" class="btn btn-outline-primary fw-semibold"><i class="bi bi-phone"></i> Try Demo as Inspector</a>
+            <a href="{% url 'users:demo_login' role='supervisor' %}" class="btn btn-outline-dark fw-semibold"><i class="bi bi-laptop"></i> Try Demo as Supervisor</a>
+        </div>
       </div>
     </div>
   </div>
