@@ -31,6 +31,9 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'dashboard:overview' %}">Supervisor Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'reporting:daily-report' %}">Reporting</a></li>
         {% endif %}
+        {% if is_factory_manager_role or is_admin_role %}
+        <li class="nav-item"><a class="nav-link text-warning" href="{% url 'ai_engine:labeling_workspace' %}"><i class="bi bi-robot"></i> AI Labeling</a></li>
+        {% endif %}
         {% if is_admin_role %}
         <li class="nav-item"><a class="nav-link" href="{% url 'core:master-data' %}">Master Data</a></li>
         <li class="nav-item"><a class="nav-link" href="/admin/">Django Admin</a></li>
@@ -57,10 +60,22 @@
 
 <main class="container-fluid px-3 px-lg-4 py-4">
   {% if messages %}
+    <div id="messageContainer" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1060; width: 90%; max-width: 500px;">
     {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:'info' }} shadow-sm">{{ message }}</div>
+      <div class="alert alert-{{ message.tags|default:'info' }} shadow alert-dismiss-auto" role="alert">
+        {{ message }}
+      </div>
     {% endfor %}
+    </div>
   {% endif %}
+
+  {% if request.path != '/' and request.path != '/users/login/' %}
+    <div class="mb-3 d-flex gap-2">
+      <button class="btn btn-sm btn-outline-secondary" onclick="history.back()">&larr; Back</button>
+      <a class="btn btn-sm btn-outline-primary" href="{% url 'core:home' %}">Home</a>
+    </div>
+  {% endif %}
+
   {% block content %}{% endblock %}
 </main>
 

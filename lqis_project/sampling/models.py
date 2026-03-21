@@ -59,6 +59,23 @@ class FactoryIntakeSample(models.Model):
     )
     decision_at = models.DateTimeField(null=True, blank=True)
 
+    # AI Data Collection Fields (Ground Truth Generation)
+    AI_LABELS = [
+        ("Good", "Good"),
+        ("Average", "Average"),
+        ("Poor", "Poor"),
+    ]
+    ai_label_grade = models.CharField(max_length=20, choices=AI_LABELS, blank=True, null=True)
+    ai_label_reason = models.TextField(blank=True)
+    ai_label_reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="labeled_ai_samples"
+    )
+    ai_label_timestamp = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

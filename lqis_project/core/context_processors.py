@@ -8,4 +8,5 @@ def role_flags(request):
         "is_admin_role": user.is_superuser or "Admin" in names,
         "is_inspector_role": user.is_superuser or "Inspector" in names,
         "is_supervisor_role": user.is_superuser or "Supervisor" in names,
+        "is_factory_manager_role": user.is_superuser or "Factory Manager" in names,
     }

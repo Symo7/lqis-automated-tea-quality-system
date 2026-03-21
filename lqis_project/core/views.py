@@ -40,6 +40,7 @@ def home(request):
         "recent_samples": FactoryIntakeSample.objects.select_related("factory", "batch").all()[:5],
         "recent_alerts": QualityAlert.objects.select_related("sample", "sample__factory").all()[:5],
         "total_today": FactoryIntakeSample.objects.filter(intake_timestamp__date=timezone.localdate()).count(),
+        "total_samples": FactoryIntakeSample.objects.count(),
     }
     return render(request, "core/home.html", context)
 

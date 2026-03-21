@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AI Dataset Labeling Workspace - LQIS{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h3"><i class="bi bi-robot text-primary me-2"></i> Dataset Labeling Workspace</h1>
+        <p class="text-muted">Review incoming leaf images to build the ground truth dataset for the AI engine.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <div class="d-inline-block me-3 text-center">
+            <span class="d-block h3 mb-0 text-success">{{ labeled_count }}</span>
+            <span class="text-muted small">Labeled</span>
+        </div>
+        <div class="d-inline-block text-center">
+            <span class="d-block h3 mb-0 text-warning">{{ unlabeled_count }}</span>
+            <span class="text-muted small">Remaining</span>
+        </div>
+    </div>
+</div>
+
+{% if sample %}
+<div class="row align-items-center mb-4">
+    <div class="col-lg-6">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-surface border-0 d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Intake Sample Image</span>
+                <span class="badge bg-secondary">{{ sample.batch.batch_code }}</span>
+            </div>
+            <div class="card-body text-center bg-light rounded-bottom p-0 overflow-hidden" style="max-height: 500px;">
+                {% if sample.leaf_image %}
+                    <img src="{{ sample.leaf_image.url }}" class="img-fluid w-100 object-fit-cover" style="max-height: 500px;" alt="Leaf sample">
+                {% else %}
+                    <div class="p-5 text-muted">No Image Available</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mt-4 mt-lg-0">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold border-bottom pb-2 mb-3">Label This Sample</h5>
+                
+                <div class="mb-4">
+                    <p class="mb-1 text-muted small">Intake Time</p>
+                    <p class="fw-bold">{{ sample.intake_timestamp|date:"M d, Y H:i" }}</p>
+                    
+                    <p class="mb-1 text-muted small">Factory / Supplier</p>
+                    <p class="fw-bold">{{ sample.factory.name }} / {{ sample.supplier.name }}</p>
+
+                    <p class="mb-1 text-muted small">Moisture Content</p>
+                    <p class="fw-bold">{{ sample.moisture_pct }}%</p>
+                </div>
+
+                <form method="post" action="{% url 'ai_engine:labeling_workspace' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="sample_id" value="{{ sample.id }}">
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Rejection/Warning Reason (Optional)</label>
+                        <input type="text" name="reason" class="form-control" placeholder="e.g., Too many open leaves, stalky">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" name="grade" value="Good" class="btn btn-success btn-lg py-3 fw-bold">
+                            <i class="bi bi-check-circle me-2"></i> Mark as GOOD
+                        </button>
+                        <button type="submit" name="grade" value="Average" class="btn btn-warning btn-lg py-3 fw-bold">
+                            <i class="bi bi-dash-circle me-2"></i> Mark as AVERAGE
+                        </button>
+                        <button type="submit" name="grade" value="Poor" class="btn btn-danger btn-lg py-3 fw-bold">
+                            <i class="bi bi-x-circle me-2"></i> Mark as POOR
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-success shadow-sm border-0 text-center py-5">
+    <i class="bi bi-stars display-4 d-block mb-3"></i>
+    <h4 class="alert-heading fw-bold">You're all caught up!</h4>
+    <p class="mb-0">There are no unlabeled samples in the queue at this time. Excellent work building the dataset!</p>
+</div>
+{% endif %}
+
+{% endblock %}

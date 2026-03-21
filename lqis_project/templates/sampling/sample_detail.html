@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}Sample Detail | LQIS{% endblock %}
 {% block content %}
-<h4 class="mb-3">Sample Detail</h4>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h4 class="mb-0">Sample Detail</h4>
+    {% if not can_decide %}
+    <a class="btn btn-primary" href="{% url 'sampling:factory-intake-create' %}">+ Submit Another Sample</a>
+    {% endif %}
+  </div>
+</div>
 <div class="row g-3">
   <div class="col-lg-8">
     <div class="card"><div class="card-body">
@@ -43,7 +49,17 @@
     {% if can_decide %}
     <div class="card"><div class="card-body">
       <h6>Supervisor Decision</h6>
-      <form method="post" action="{% url 'sampling:sample-decision' sample.id %}">{% csrf_token %}{{ decision_form.as_p }}<button class="btn btn-success w-100">Save Decision</button></form>
+      {% if not sample.decision %}
+        <form method="post" action="{% url 'sampling:sample-decision' sample.id %}">{% csrf_token %}{{ decision_form.as_p }}<button class="btn btn-success w-100">Save Decision</button></form>
+      {% else %}
+        <div class="alert alert-success py-2 mb-3">Decision already recorded: <strong>{{ sample.decision }}</strong></div>
+        {% if next_pending_sample %}
+          <a class="btn btn-primary w-100 mb-2" href="{% url 'sampling:sample-detail' next_pending_sample.id %}">Next Pending Batch &rarr;</a>
+        {% else %}
+          <div class="text-success text-center mb-2 small">All caught up! No pending decisions.</div>
+        {% endif %}
+        <a class="btn btn-outline-secondary w-100" href="{% url 'dashboard:overview' %}">Back to Dashboard</a>
+      {% endif %}
     </div></div>
     {% endif %}
   </div>

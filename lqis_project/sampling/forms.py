@@ -47,6 +47,13 @@ class FactoryIntakeSampleForm(forms.ModelForm):
 
         if factory and batch and batch.factory_id != factory.id:
             self.add_error("batch", "Selected batch does not belong to selected factory.")
+            
+        supplier: Supplier = cleaned_data.get("supplier")
+        if batch and supplier and batch.supplier_id != supplier.id:
+            self.add_error("batch", "Selected batch does not belong to selected supplier.")
+            
+        if batch and tea_buying_center and batch.buying_center_id != tea_buying_center.id:
+            self.add_error("batch", "Selected batch does not belong to selected buying center.")
 
         return cleaned_data
 

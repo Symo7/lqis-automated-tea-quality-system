@@ -5,14 +5,19 @@
   <div class="card-body py-4">
     <h3 class="mb-2">LQIS Operations Hub</h3>
     <p class="mb-2">Role: <span class="badge bg-success">{{ role }}</span> &middot; Sampling Point: <strong>Factory Intake</strong></p>
-    <a class="btn btn-success" href="{% url landing %}">Open Primary Workspace</a>
+    {% if role == 'Supervisor' or role == 'Admin' %}
+    <a class="btn btn-success" href="{% url 'dashboard:overview' %}">Open Primary Workspace (Decisions)</a>
+    {% else %}
+    <a class="btn btn-success" href="{% url 'sampling:sample-list' %}">Open Primary Workspace (Sampling)</a>
+    {% endif %}
   </div>
 </div>
 
 <div class="row g-3 mb-3">
-  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Total Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></div>
-  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Pending Decisions</div><div class="stat-value" data-counter>{{ pending_decisions }}</div></div></div></div>
-  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted">Recent Alerts</div><div class="stat-value" data-counter>{{ recent_alerts|length }}</div></div></div></div>
+  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Total Samples</div><div class="stat-value" data-counter>{{ total_samples }}</div></div></div></a></div>
+  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Today's Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></a></div>
+  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}?decision=UNDECIDED" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Pending Decisions</div><div class="stat-value" data-counter>{{ pending_decisions }}</div></div></div></a></div>
+  <div class="col-md-3"><a href="{% url 'reporting:daily-report' %}?start_date={% now 'Y-m-d' %}&end_date={% now 'Y-m-d' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Recent Alerts</div><div class="stat-value" data-counter>{{ recent_alerts|length }}</div></div></div></a></div>
 </div>
 
 <div class="row g-3">

@@ -24,6 +24,8 @@ def overview(request):
 
     today = timezone.localdate()
     today_samples = samples.filter(intake_timestamp__date=today)
+    
+    pending_batches = samples.filter(decision="").order_by("intake_timestamp")[:15]
     summary = today_samples.aggregate(
         total=Count("id"),
         avg_pluck=Avg("predicted_pluck_score"),
@@ -164,7 +166,7 @@ def overview(request):
             {"day": row["day"].strftime("%Y-%m-%d"), "avg_quality": round(float(row["avg_quality"] or 0), 2)}
         )
 
-    top_supplier_trends = dict(list(supplier_trend_map.items())[:4])
+    top_supplier_trends = dict(list(supplier_trend_map.items())[0:4])
 
     alert_distribution_factory = (
         alerts.values("sample__factory__name", "alert_type").annotate(total=Count("id")).order_by("sample__factory__name", "alert_type")
@@ -183,6 +185,7 @@ def overview(request):
         "alert_counts": alerts.values("alert_type").annotate(total=Count("id")).order_by("alert_type"),
         "thresholds": thresholds,
         "recent_samples": samples[:10],
+        "pending_batches": pending_batches,
         "buying_center_perf": list(buying_center_perf),
         "supplier_perf": list(supplier_perf),
         "factory_comparison": list(factory_comparison),

@@ -17,6 +17,7 @@ class Command(BaseCommand):
         admin_group, _ = Group.objects.get_or_create(name="Admin")
         inspector_group, _ = Group.objects.get_or_create(name="Inspector")
         supervisor_group, _ = Group.objects.get_or_create(name="Supervisor")
+        manager_group, _ = Group.objects.get_or_create(name="Factory Manager")
 
         admin, _ = User.objects.get_or_create(username="admin", defaults={"is_staff": True, "is_superuser": True})
         admin.set_password("admin123")
@@ -34,6 +35,11 @@ class Command(BaseCommand):
         supervisor.set_password("admin123")
         supervisor.save()
         supervisor.groups.add(supervisor_group)
+
+        manager, _ = User.objects.get_or_create(username="manager1")
+        manager.set_password("admin123")
+        manager.save()
+        manager.groups.add(manager_group)
 
         f1, _ = Factory.objects.get_or_create(code="F001", defaults={"name": "Kericho Main", "location": "Kericho"})
         f2, _ = Factory.objects.get_or_create(code="F002", defaults={"name": "Nandi Intake", "location": "Nandi"})

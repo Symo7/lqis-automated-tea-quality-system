@@ -57,6 +57,7 @@
 {{ block.super }}
 <script>
 const imageInput = document.getElementById('id_leaf_image');
+if (imageInput) imageInput.setAttribute('accept', 'image/*;capture=camera');
 const preview = document.getElementById('preview');
 const predBox = document.getElementById('predictionBox');
 const qualityPreview = document.getElementById('qualityPreview');
@@ -66,6 +67,28 @@ const overrideInput = document.getElementById('id_manual_override_pluck_score');
 const factorySelect = document.getElementById('id_factory');
 const centerSelect = document.getElementById('id_tea_buying_center');
 const batchSelect = document.getElementById('id_batch');
+const timestampInput = document.getElementById('id_intake_timestamp');
+
+// Auto-updating timestamp logic
+let keepUpdatingTime = true;
+function updateLiveTime() {
+  if (keepUpdatingTime && timestampInput) {
+    const now = new Date();
+    // Format required for datetime-local input: YYYY-MM-DDTHH:MM
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    timestampInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+}
+if (timestampInput) {
+  timestampInput.addEventListener('focus', () => { keepUpdatingTime = false; });
+  timestampInput.addEventListener('change', () => { keepUpdatingTime = false; });
+  setInterval(updateLiveTime, 1000);
+  updateLiveTime();
+}
 
 function estimateQuality(basePluck=70){
   const pluck = Number(overrideInput?.value || basePluck || 70);
@@ -76,7 +99,11 @@ function estimateQuality(basePluck=70){
   const score = Math.max(0, Math.min(100, (pluck * 0.7) + (30 - moisturePenalty - foreignPenalty))).toFixed(2);
   let status = 'Reject';
   if (score >= 85) status = 'Excellent'; else if (score >= 70) status = 'Acceptable'; else if (score >= 50) status = 'Warning';
-  qualityPreview.innerHTML = `<strong>${score}</strong> / 100 — <span class="badge-status status-${status}">${status}</span>`;
+  
+  qualityPreview.innerHTML = `
+    <strong>${score}</strong> / 100 — <span class="badge-status status-${status}">${status}</span>
+    <div class="mt-2 small opacity-75"><strong>Thresholds:</strong> &ge;85 (Excellent) &middot; &ge;70 (Acceptable) &middot; &ge;50 (Warning) &middot; &lt;50 (Reject)</div>
+  `;
 }
 
 async function refreshFactoryLinkedOptions(){

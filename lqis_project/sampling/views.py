@@ -1,13 +1,18 @@
 import base64
 import json
 import uuid
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 from ai_engine.services import run_baseline_prediction
 from core.models import Batch, Factory, Supplier, TeaBuyingCenter
@@ -36,13 +41,22 @@ def prediction_preview(request):
 
 @login_required
 @role_required("Inspector", "Admin")
+@transaction.atomic
 def sync_submit(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed."}, status=405)
 
+    # Basic Rate Limiting (2 seconds per user for sync payload)
+    cache_key = f"sync_submit_{request.user.id}"
+    if cache.get(cache_key):
+        logger.warning(f"Rate limit hit by user {request.user.id} on sync_submit")
+        return JsonResponse({"error": "Too many requests. Please wait."}, status=429)
+    cache.set(cache_key, True, timeout=2)
+
     try:
         payload = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
+        logger.warning(f"Invalid JSON payload from user {request.user.id}")
         return JsonResponse({"error": "Invalid JSON payload."}, status=400)
 
     client_id = payload.get("local_id")
@@ -58,7 +72,23 @@ def sync_submit(request):
         center = TeaBuyingCenter.objects.get(id=payload.get("tea_buying_center"))
         supplier = Supplier.objects.get(id=payload.get("supplier"))
         batch = Batch.objects.get(id=payload.get("batch"))
+        
+        # Strict FK validation mimicking the form clean method
+        if center.factory_id != factory.id:
+            logger.warning(f"Security: User {request.user.id} attempted mismatched Factory/Center")
+            return JsonResponse({"error": "Center does not belong to factory."}, status=400)
+        if batch.factory_id != factory.id:
+            logger.warning(f"Security: User {request.user.id} attempted mismatched Factory/Batch")
+            return JsonResponse({"error": "Batch does not belong to factory."}, status=400)
+        if batch.supplier_id != supplier.id:
+            logger.warning(f"Security: User {request.user.id} attempted mismatched Supplier/Batch")
+            return JsonResponse({"error": "Batch does not belong to supplier."}, status=400)
+        if batch.buying_center_id != center.id:
+            logger.warning(f"Security: User {request.user.id} attempted mismatched Center/Batch")
+            return JsonResponse({"error": "Batch does not belong to center."}, status=400)
+            
     except (Factory.DoesNotExist, TeaBuyingCenter.DoesNotExist, Supplier.DoesNotExist, Batch.DoesNotExist):
+        logger.warning(f"Invalid Master Data payload from user {request.user.id}")
         return JsonResponse({"error": "Referenced master data no longer valid on server."}, status=400)
 
     image_data = payload.get("image_data_url")
@@ -97,6 +127,7 @@ def sync_submit(request):
     sample.quality_status = status
     sample.save(update_fields=["quality_score", "quality_status", "updated_at"])
     refresh_alerts(sample)
+    logger.info(f"Sample {sample.id} synced successfully by user {request.user.id}")
     return JsonResponse({"status": "synced", "sample_id": sample.id})
 
 
@@ -104,6 +135,7 @@ def sync_submit(request):
 @role_required("Inspector", "Admin")
 def sample_list(request):
     decision = request.GET.get("decision", "")
+    date_str = request.GET.get("date", "")
     samples = FactoryIntakeSample.objects.select_related(
         "factory", "tea_buying_center", "supplier", "batch", "inspector", "decision_by"
     )
@@ -111,11 +143,16 @@ def sample_list(request):
         samples = samples.filter(decision="")
     elif decision:
         samples = samples.filter(decision=decision)
-    return render(request, "sampling/sample_list.html", {"samples": samples, "decision_filter": decision})
+        
+    if date_str:
+        samples = samples.filter(intake_timestamp__date=date_str)
+        
+    return render(request, "sampling/sample_list.html", {"samples": samples, "decision_filter": decision, "date_filter": date_str})
 
 
 @login_required
 @role_required("Inspector", "Admin")
+@transaction.atomic
 def factory_intake_create(request):
     form = FactoryIntakeSampleForm(request.POST or None, request.FILES or None)
     if request.method == "POST":
@@ -130,8 +167,11 @@ def factory_intake_create(request):
             sample.quality_status = status
             sample.save(update_fields=["quality_score", "quality_status", "updated_at"])
             refresh_alerts(sample)
+            logger.info(f"Sample {sample.id} created successfully by user {request.user.id}")
             messages.success(request, "Factory intake sample saved successfully.")
             return redirect("sampling:sample-detail", pk=sample.pk)
+        
+        logger.warning(f"Form submission failed for user {request.user.id}. Errors: {form.errors.as_json()}")
         messages.error(request, "Please fix form errors and submit again.")
 
     return render(request, "sampling/factory_intake_form.html", {"form": form})
@@ -146,6 +186,11 @@ def sample_detail(request, pk: int):
         pk=pk,
     )
     can_decide = request.user.is_superuser or request.user.groups.filter(name__in=["Supervisor", "Admin"]).exists()
+    
+    next_pending_sample = None
+    if can_decide:
+        next_pending_sample = FactoryIntakeSample.objects.filter(decision="").exclude(pk=pk).order_by("intake_timestamp").first()
+
     return render(
         request,
         "sampling/sample_detail.html",
@@ -153,6 +198,7 @@ def sample_detail(request, pk: int):
             "sample": sample,
             "decision_form": SupervisorDecisionForm(instance=sample),
             "can_decide": can_decide,
+            "next_pending_sample": next_pending_sample,
         },
     )
 
