@@ -88,7 +88,7 @@ ASGI_APPLICATION = 'lqis_project.asgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
+        conn_max_age=0, # Crucial: forces immediate Postgres release to prevent Free-Tier cluster lockouts
         conn_health_checks=True,
     )
 }
@@ -139,7 +139,7 @@ DEFAULT_FROM_EMAIL = f"LQIS Automated System <{EMAIL_HOST_USER}>"
 # Django-Q2 Configuration (Background Tasks Database Broker)
 Q_CLUSTER = {
     'name': 'lqis_queue',
-    'workers': 4,
+    'workers': 1, # Limited to 1 worker so `django-q2` does not eat the 20 DB connection limit
     'recycle': 500,
     'timeout': 60,
     'compress': True,
