@@ -22,7 +22,7 @@ def demo_login_view(request, role):
         raise Http404("Demo mode is not enabled on this deployment.")
 
     User = get_user_model()
-    username = f"{role}_1"
+    username = f"{role}1"
     demo_user = User.objects.filter(username=username).first()
     
     if demo_user:
