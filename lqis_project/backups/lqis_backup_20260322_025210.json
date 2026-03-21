@@ -1,0 +1,1228 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$IhfkKUNLkNYUb8dxeEIobS$sm2Ljs+Ok9UwtoOQR9F1VePEv1VZ/XC3HmHGfn76Yhk=",
+    "last_login": "2026-03-21T00:40:59.217Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-08T23:46:40.184Z",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$SqXXpotdeJE3mEIm6vPKrU$iA9ClD9/Y8QQSFvFNsabJiSLrZXPMN4xilGFQCvHhMY=",
+    "last_login": "2026-03-21T01:26:56.628Z",
+    "is_superuser": false,
+    "username": "inspector1",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-08T23:46:40.761Z",
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$pHbVUTtjRJp8vT9hHW93j5$5i86E/OA+GnjxfMDNa4S2lIUHQiaGQq3U8B2hWS9pP4=",
+    "last_login": "2026-03-21T01:24:18.116Z",
+    "is_superuser": false,
+    "username": "supervisor1",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-08T23:46:41.319Z",
+    "groups": [
+      3
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$DVSTGTyOyvEqCNjxcQPhJY$Rfo1TcWu0XNoReoTBdYclvKMLauC2y2MteL/BwohtMY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "manager1",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-21T03:13:59.349Z",
+    "groups": [
+      4
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 1,
+  "fields": {
+    "name": "Admin",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 2,
+  "fields": {
+    "name": "Inspector",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 3,
+  "fields": {
+    "name": "Supervisor",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 4,
+  "fields": {
+    "name": "Factory Manager",
+    "permissions": []
+  }
+},
+{
+  "model": "core.factory",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.864Z",
+    "updated_at": "2026-03-08T23:46:41.864Z",
+    "name": "Kericho Main",
+    "code": "F001",
+    "location": "Kericho",
+    "is_active": true
+  }
+},
+{
+  "model": "core.factory",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.869Z",
+    "updated_at": "2026-03-08T23:46:41.869Z",
+    "name": "Nandi Intake",
+    "code": "F002",
+    "location": "Nandi",
+    "is_active": true
+  }
+},
+{
+  "model": "core.factory",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-03-21T00:46:24.245Z",
+    "updated_at": "2026-03-21T00:46:24.245Z",
+    "name": "Nyankoba",
+    "code": "F003",
+    "location": "Kisii",
+    "is_active": true
+  }
+},
+{
+  "model": "core.teabuyingcenter",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.881Z",
+    "updated_at": "2026-03-08T23:46:41.881Z",
+    "factory": 1,
+    "name": "Ainamoi Center",
+    "code": "BC102",
+    "location": ""
+  }
+},
+{
+  "model": "core.teabuyingcenter",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.887Z",
+    "updated_at": "2026-03-08T23:46:41.887Z",
+    "factory": 2,
+    "name": "Kapsabet Center",
+    "code": "BC201",
+    "location": ""
+  }
+},
+{
+  "model": "core.teabuyingcenter",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.876Z",
+    "updated_at": "2026-03-08T23:46:41.876Z",
+    "factory": 1,
+    "name": "Kapsoit Center",
+    "code": "BC101",
+    "location": ""
+  }
+},
+{
+  "model": "core.teabuyingcenter",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-03-21T00:47:51.536Z",
+    "updated_at": "2026-03-21T00:47:51.536Z",
+    "factory": 3,
+    "name": "Mosisa",
+    "code": "F003",
+    "location": "Kisii"
+  }
+},
+{
+  "model": "core.supplier",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-03-21T00:50:40.972Z",
+    "updated_at": "2026-03-21T00:50:40.972Z",
+    "name": "Farmer First Ltd",
+    "code": "F003",
+    "contact": "0115182398",
+    "is_farmer_group": false
+  }
+},
+{
+  "model": "core.supplier",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.893Z",
+    "updated_at": "2026-03-08T23:46:41.893Z",
+    "name": "Green Valley Farmers",
+    "code": "SUP001",
+    "contact": "",
+    "is_farmer_group": true
+  }
+},
+{
+  "model": "core.supplier",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.898Z",
+    "updated_at": "2026-03-08T23:46:41.898Z",
+    "name": "Highland Leaf Ltd",
+    "code": "SUP002",
+    "contact": "",
+    "is_farmer_group": false
+  }
+},
+{
+  "model": "core.batch",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-03-21T00:52:22.680Z",
+    "updated_at": "2026-03-21T00:53:58.655Z",
+    "factory": 3,
+    "buying_center": 4,
+    "supplier": 3,
+    "batch_code": "BATCH-2026-004",
+    "intake_date": "2026-03-21",
+    "notes": ""
+  }
+},
+{
+  "model": "core.batch",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.922Z",
+    "updated_at": "2026-03-08T23:46:41.922Z",
+    "factory": 1,
+    "buying_center": 1,
+    "supplier": 1,
+    "batch_code": "BATCH-2026-001",
+    "intake_date": "2026-03-08",
+    "notes": ""
+  }
+},
+{
+  "model": "core.batch",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.927Z",
+    "updated_at": "2026-03-08T23:46:41.927Z",
+    "factory": 1,
+    "buying_center": 2,
+    "supplier": 2,
+    "batch_code": "BATCH-2026-002",
+    "intake_date": "2026-03-08",
+    "notes": ""
+  }
+},
+{
+  "model": "core.batch",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.932Z",
+    "updated_at": "2026-03-08T23:46:41.932Z",
+    "factory": 2,
+    "buying_center": 3,
+    "supplier": 1,
+    "batch_code": "BATCH-2026-003",
+    "intake_date": "2026-03-08",
+    "notes": ""
+  }
+},
+{
+  "model": "core.factorythreshold",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.938Z",
+    "updated_at": "2026-03-21T07:13:42.355Z",
+    "factory": 1,
+    "min_pluck": 65,
+    "max_moisture": "8.00",
+    "max_foreign_matter": "2.00"
+  }
+},
+{
+  "model": "core.factorythreshold",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-03-08T23:46:41.943Z",
+    "updated_at": "2026-03-21T07:13:42.363Z",
+    "factory": 2,
+    "min_pluck": 60,
+    "max_moisture": "8.50",
+    "max_foreign_matter": "2.50"
+  }
+},
+{
+  "model": "core.factorythreshold",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-03-21T00:52:48.295Z",
+    "updated_at": "2026-03-21T00:52:48.295Z",
+    "factory": 3,
+    "min_pluck": 60,
+    "max_moisture": "8.00",
+    "max_foreign_matter": "2.00"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 20,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 1,
+    "supplier": 1,
+    "batch": 1,
+    "intake_timestamp": "2026-03-21T07:13:42.370Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 82,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.20",
+    "foreign_matter_pct": "1.10",
+    "notes": "Seed sample",
+    "quality_score": "77.90",
+    "quality_status": "Acceptable",
+    "decision": "",
+    "decision_reason": "",
+    "decision_by": null,
+    "decision_at": null,
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T07:13:42.372Z",
+    "updated_at": "2026-03-21T07:13:42.381Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 21,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 2,
+    "supplier": 2,
+    "batch": 2,
+    "intake_timestamp": "2026-03-21T04:13:42.370Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 58,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "8.90",
+    "foreign_matter_pct": "2.20",
+    "notes": "Seed sample",
+    "quality_score": "46.35",
+    "quality_status": "Reject",
+    "decision": "",
+    "decision_reason": "",
+    "decision_by": null,
+    "decision_at": null,
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T07:13:42.392Z",
+    "updated_at": "2026-03-21T07:13:42.400Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 16,
+  "fields": {
+    "factory": 3,
+    "tea_buying_center": 4,
+    "supplier": 3,
+    "batch": 4,
+    "intake_timestamp": "2026-03-21T03:58:00Z",
+    "inspector": 1,
+    "leaf_image": "samples/tea_leaves_3_MBGt3LU.jpg",
+    "client_submission_id": "606db321f6144e9abb1e2101ba5f1a37",
+    "predicted_pluck_class": "Excellent",
+    "predicted_pluck_score": 88,
+    "prediction_confidence": "98.69",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.00",
+    "foreign_matter_pct": "1.00",
+    "notes": "Test",
+    "quality_score": "83.60",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "Test",
+    "decision_by": 1,
+    "decision_at": "2026-03-21T00:59:36.740Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T00:58:47.650Z",
+    "updated_at": "2026-03-21T00:59:36.741Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 15,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 2,
+    "batch": 3,
+    "intake_timestamp": "2026-03-21T03:25:00Z",
+    "inspector": 2,
+    "leaf_image": "samples/Tea_Leaves_2_6QQqwcO.jpg",
+    "client_submission_id": "b5a630c43fc7457e868f5a1b7bde7e83",
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 84,
+    "prediction_confidence": "95.37",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "9.00",
+    "foreign_matter_pct": "2.00",
+    "notes": "",
+    "quality_score": "65.80",
+    "quality_status": "Warning",
+    "decision": "Reject Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:30:57.584Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T00:25:07.129Z",
+    "updated_at": "2026-03-21T00:30:57.584Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 17,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 1,
+    "supplier": 1,
+    "batch": 1,
+    "intake_timestamp": "2026-03-21T03:13:59.876Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 82,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.20",
+    "foreign_matter_pct": "1.10",
+    "notes": "Seed sample",
+    "quality_score": "77.90",
+    "quality_status": "Acceptable",
+    "decision": "",
+    "decision_reason": "",
+    "decision_by": null,
+    "decision_at": null,
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T03:13:59.877Z",
+    "updated_at": "2026-03-21T03:13:59.882Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 14,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 2,
+    "supplier": 1,
+    "batch": 1,
+    "intake_timestamp": "2026-03-21T02:54:00Z",
+    "inspector": 2,
+    "leaf_image": "samples/Tea_Leaves_1_q3aJFwe.jpg",
+    "client_submission_id": "9a74e7ee6f7f4314ac82e2e3e9e8e7a9",
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 83,
+    "prediction_confidence": "95.04",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.00",
+    "foreign_matter_pct": "2.00",
+    "notes": "Test",
+    "quality_score": "72.10",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:07:07.884Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-20T23:54:27.157Z",
+    "updated_at": "2026-03-21T00:07:07.884Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 22,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 1,
+    "batch": 3,
+    "intake_timestamp": "2026-03-21T01:13:42.370Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 68,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.80",
+    "foreign_matter_pct": "1.90",
+    "notes": "Seed sample",
+    "quality_score": "59.60",
+    "quality_status": "Warning",
+    "decision": "",
+    "decision_reason": "",
+    "decision_by": null,
+    "decision_at": null,
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T07:13:42.430Z",
+    "updated_at": "2026-03-21T07:13:42.436Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 18,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 2,
+    "supplier": 2,
+    "batch": 2,
+    "intake_timestamp": "2026-03-21T00:13:59.876Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 58,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "8.90",
+    "foreign_matter_pct": "2.20",
+    "notes": "Seed sample",
+    "quality_score": "46.35",
+    "quality_status": "Reject",
+    "decision": "",
+    "decision_reason": "",
+    "decision_by": null,
+    "decision_at": null,
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T03:13:59.888Z",
+    "updated_at": "2026-03-21T03:13:59.893Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 11,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 1,
+    "supplier": 1,
+    "batch": 1,
+    "intake_timestamp": "2026-03-20T22:38:02.704Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 82,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.20",
+    "foreign_matter_pct": "1.10",
+    "notes": "Seed sample",
+    "quality_score": "77.90",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:13:42.931Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-20T22:38:02.707Z",
+    "updated_at": "2026-03-21T00:13:42.931Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 19,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 1,
+    "batch": 3,
+    "intake_timestamp": "2026-03-20T21:13:59.876Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 68,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.80",
+    "foreign_matter_pct": "1.90",
+    "notes": "Seed sample",
+    "quality_score": "59.60",
+    "quality_status": "Warning",
+    "decision": "",
+    "decision_reason": "",
+    "decision_by": null,
+    "decision_at": null,
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-21T03:13:59.911Z",
+    "updated_at": "2026-03-21T03:13:59.915Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 12,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 2,
+    "supplier": 2,
+    "batch": 2,
+    "intake_timestamp": "2026-03-20T19:38:02.704Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 58,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "8.90",
+    "foreign_matter_pct": "2.20",
+    "notes": "Seed sample",
+    "quality_score": "46.35",
+    "quality_status": "Reject",
+    "decision": "Reject Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:13:32.322Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-20T22:38:02.720Z",
+    "updated_at": "2026-03-21T00:13:32.322Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 13,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 1,
+    "batch": 3,
+    "intake_timestamp": "2026-03-20T16:38:02.704Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 68,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.80",
+    "foreign_matter_pct": "1.90",
+    "notes": "Seed sample",
+    "quality_score": "59.60",
+    "quality_status": "Warning",
+    "decision": "Reject Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:13:19.571Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-20T22:38:02.744Z",
+    "updated_at": "2026-03-21T00:13:19.571Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 10,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 1,
+    "batch": 3,
+    "intake_timestamp": "2026-03-09T05:31:00Z",
+    "inspector": 2,
+    "leaf_image": "samples/offline-924d1ee6-d677-43e7-9dc4-db45b278276d.jpg",
+    "client_submission_id": "924d1ee6-d677-43e7-9dc4-db45b278276d",
+    "predicted_pluck_class": "Excellent",
+    "predicted_pluck_score": 85,
+    "prediction_confidence": "97.03",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "5.00",
+    "foreign_matter_pct": "2.00",
+    "notes": "",
+    "quality_score": "73.50",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "",
+    "decision_by": 3,
+    "decision_at": "2026-03-09T02:42:52.446Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-09T02:33:47.152Z",
+    "updated_at": "2026-03-09T02:42:52.446Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 9,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 2,
+    "batch": 3,
+    "intake_timestamp": "2026-03-09T05:14:00Z",
+    "inspector": 2,
+    "leaf_image": "samples/tea_leaves_3.jpg",
+    "client_submission_id": "6369584c321f49d785278b66648b36bc",
+    "predicted_pluck_class": "Excellent",
+    "predicted_pluck_score": 88,
+    "prediction_confidence": "98.69",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "9.00",
+    "foreign_matter_pct": "1.00",
+    "notes": "",
+    "quality_score": "76.60",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "",
+    "decision_by": 3,
+    "decision_at": "2026-03-09T02:48:51.756Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-09T02:24:46.279Z",
+    "updated_at": "2026-03-09T02:48:51.757Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 8,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 2,
+    "supplier": 1,
+    "batch": 1,
+    "intake_timestamp": "2026-03-09T05:10:00Z",
+    "inspector": 2,
+    "leaf_image": "samples/Tea_Leaves_2.jpg",
+    "client_submission_id": "43b8b5baec7a46378255c7eec28e7537",
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 84,
+    "prediction_confidence": "95.37",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "6.00",
+    "foreign_matter_pct": "2.00",
+    "notes": "",
+    "quality_score": "72.80",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "",
+    "decision_by": 3,
+    "decision_at": "2026-03-09T02:50:25.562Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-09T02:13:07.994Z",
+    "updated_at": "2026-03-09T02:50:25.563Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 7,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 1,
+    "batch": 3,
+    "intake_timestamp": "2026-03-09T01:49:00Z",
+    "inspector": 2,
+    "leaf_image": "samples/Tea_Leaves_1.jpg",
+    "client_submission_id": "85abbec721904c819445c23c66e39601",
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 83,
+    "prediction_confidence": "95.04",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.00",
+    "foreign_matter_pct": "2.00",
+    "notes": "",
+    "quality_score": "72.10",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "",
+    "decision_by": 3,
+    "decision_at": "2026-03-09T02:51:13.428Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-09T01:57:32.099Z",
+    "updated_at": "2026-03-09T02:51:13.428Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 4,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 1,
+    "supplier": 1,
+    "batch": 1,
+    "intake_timestamp": "2026-03-09T00:09:21.246Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 82,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.20",
+    "foreign_matter_pct": "1.10",
+    "notes": "Seed sample",
+    "quality_score": "77.90",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "",
+    "decision_by": 3,
+    "decision_at": "2026-03-09T02:51:27.182Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-09T00:09:21.248Z",
+    "updated_at": "2026-03-09T02:51:27.182Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 1,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 1,
+    "supplier": 1,
+    "batch": 1,
+    "intake_timestamp": "2026-03-08T23:46:41.947Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 82,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.20",
+    "foreign_matter_pct": "1.10",
+    "notes": "Seed sample",
+    "quality_score": "77.90",
+    "quality_status": "Acceptable",
+    "decision": "Approve Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:13:07.281Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-08T23:46:41.949Z",
+    "updated_at": "2026-03-21T00:13:07.281Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 5,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 2,
+    "supplier": 2,
+    "batch": 2,
+    "intake_timestamp": "2026-03-08T21:09:21.246Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 58,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "8.90",
+    "foreign_matter_pct": "2.20",
+    "notes": "Seed sample",
+    "quality_score": "46.35",
+    "quality_status": "Reject",
+    "decision": "Reject Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:12:55.283Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-09T00:09:21.261Z",
+    "updated_at": "2026-03-21T00:12:55.283Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 2,
+  "fields": {
+    "factory": 1,
+    "tea_buying_center": 2,
+    "supplier": 2,
+    "batch": 2,
+    "intake_timestamp": "2026-03-08T20:46:41.947Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 58,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "8.90",
+    "foreign_matter_pct": "2.20",
+    "notes": "Seed sample",
+    "quality_score": "46.35",
+    "quality_status": "Reject",
+    "decision": "Reject Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-21T00:10:46.139Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-08T23:46:41.961Z",
+    "updated_at": "2026-03-21T00:10:46.139Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 6,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 1,
+    "batch": 3,
+    "intake_timestamp": "2026-03-08T18:09:21.246Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 68,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.80",
+    "foreign_matter_pct": "1.90",
+    "notes": "Seed sample",
+    "quality_score": "59.60",
+    "quality_status": "Warning",
+    "decision": "Reject Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-20T23:58:32.136Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-09T00:09:21.287Z",
+    "updated_at": "2026-03-20T23:58:32.136Z"
+  }
+},
+{
+  "model": "sampling.factoryintakesample",
+  "pk": 3,
+  "fields": {
+    "factory": 2,
+    "tea_buying_center": 3,
+    "supplier": 1,
+    "batch": 3,
+    "intake_timestamp": "2026-03-08T17:46:41.947Z",
+    "inspector": 2,
+    "leaf_image": "",
+    "client_submission_id": null,
+    "predicted_pluck_class": "Good",
+    "predicted_pluck_score": 68,
+    "prediction_confidence": "75.00",
+    "manual_override_pluck_score": null,
+    "moisture_pct": "7.80",
+    "foreign_matter_pct": "1.90",
+    "notes": "Seed sample",
+    "quality_score": "59.60",
+    "quality_status": "Warning",
+    "decision": "Reject Batch",
+    "decision_reason": "Test",
+    "decision_by": 3,
+    "decision_at": "2026-03-20T23:40:54.952Z",
+    "ai_label_grade": null,
+    "ai_label_reason": "",
+    "ai_label_reviewer": null,
+    "ai_label_timestamp": null,
+    "created_at": "2026-03-08T23:46:41.986Z",
+    "updated_at": "2026-03-20T23:40:54.952Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 16,
+  "fields": {
+    "sample": 16,
+    "decision": "Approve Batch",
+    "reason": "Test",
+    "decided_by": 1,
+    "decided_at": "2026-03-21T00:59:36.747Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 15,
+  "fields": {
+    "sample": 15,
+    "decision": "Reject Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:30:57.591Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 14,
+  "fields": {
+    "sample": 11,
+    "decision": "Approve Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:13:42.937Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 13,
+  "fields": {
+    "sample": 12,
+    "decision": "Reject Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:13:32.328Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 12,
+  "fields": {
+    "sample": 13,
+    "decision": "Reject Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:13:19.577Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 11,
+  "fields": {
+    "sample": 1,
+    "decision": "Approve Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:13:07.287Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 10,
+  "fields": {
+    "sample": 5,
+    "decision": "Reject Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:12:55.289Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 9,
+  "fields": {
+    "sample": 2,
+    "decision": "Reject Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:10:46.145Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 8,
+  "fields": {
+    "sample": 14,
+    "decision": "Approve Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-21T00:07:07.891Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 7,
+  "fields": {
+    "sample": 6,
+    "decision": "Reject Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-20T23:58:32.142Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 6,
+  "fields": {
+    "sample": 3,
+    "decision": "Reject Batch",
+    "reason": "Test",
+    "decided_by": 3,
+    "decided_at": "2026-03-20T23:40:54.958Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 5,
+  "fields": {
+    "sample": 4,
+    "decision": "Approve Batch",
+    "reason": "",
+    "decided_by": 3,
+    "decided_at": "2026-03-09T02:51:27.189Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 4,
+  "fields": {
+    "sample": 7,
+    "decision": "Approve Batch",
+    "reason": "",
+    "decided_by": 3,
+    "decided_at": "2026-03-09T02:51:13.434Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 3,
+  "fields": {
+    "sample": 8,
+    "decision": "Approve Batch",
+    "reason": "",
+    "decided_by": 3,
+    "decided_at": "2026-03-09T02:50:25.569Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 2,
+  "fields": {
+    "sample": 9,
+    "decision": "Approve Batch",
+    "reason": "",
+    "decided_by": 3,
+    "decided_at": "2026-03-09T02:48:51.762Z"
+  }
+},
+{
+  "model": "sampling.sampledecisionhistory",
+  "pk": 1,
+  "fields": {
+    "sample": 10,
+    "decision": "Approve Batch",
+    "reason": "",
+    "decided_by": 3,
+    "decided_at": "2026-03-09T02:42:52.453Z"
+  }
+}
+]

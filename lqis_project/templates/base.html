@@ -91,6 +91,23 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+window.showToast = function(message, type='info') {
+    let container = document.getElementById('messageContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'messageContainer';
+        container.className = 'position-fixed top-0 start-50 translate-middle-x mt-3';
+        container.style.cssText = 'z-index: 1060; width: 90%; max-width: 500px;';
+        document.body.appendChild(container);
+    }
+    const el = document.createElement('div');
+    el.className = `alert alert-${type} shadow alert-dismissible fade show`;
+    el.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    container.appendChild(el);
+    setTimeout(() => { el.classList.remove('show'); setTimeout(()=>el.remove(), 150); }, 4500);
+};
+</script>
 <script src="{% static 'js/theme.js' %}"></script>
 <script src="{% static 'js/offline_queue.js' %}"></script>
 {% block scripts %}{% endblock %}

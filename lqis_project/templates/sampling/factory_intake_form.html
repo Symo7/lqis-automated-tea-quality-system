@@ -190,9 +190,17 @@ form.addEventListener('submit', async (e) => {
         predBox.innerHTML = '<span class="text-warning">Image queued directly to Sync Vault.</span>';
         keepUpdatingTime = true; updateLiveTime();
         
-        alert("You are offline. Sample capture securely saved to the Sync Vault!");
+        if (typeof window.showToast === 'function') {
+            window.showToast("You are offline. Sample capture securely saved to the Sync Vault!", "success");
+        } else {
+            alert("You are offline. Sample capture securely saved to the Sync Vault!");
+        }
     } catch (err) {
-        alert("Failed to save offline. Please check your storage settings.");
+        if (typeof window.showToast === 'function') {
+            window.showToast("Failed to save offline. Please check your storage settings.", "danger");
+        } else {
+            alert("Failed to save offline. Please check your storage settings.");
+        }
     } finally {
         submitBtn.disabled = false; submitBtn.innerHTML = originalText;
     }

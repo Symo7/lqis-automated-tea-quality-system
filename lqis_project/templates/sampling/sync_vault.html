@@ -145,7 +145,6 @@ syncAllBtn.addEventListener('click', async () => {
         if(row) row.classList.add('table-warning');
 
         try {
-            // We use the same high-speed endpoint established during the Locust test
             const response = await fetch('/sampling/sync-submit/', {
                 method: 'POST',
                 headers: {
@@ -175,17 +174,39 @@ syncAllBtn.addEventListener('click', async () => {
     }
 
     if (failCount > 0) {
-        alert(`${successCount} synced securely. ${failCount} failed (likely validation errors or rate limiting). Please review red rows.`);
+        showToast(`${successCount} synced securely. ${failCount} failed (validation errors).`, 'danger');
     } else {
-        alert(`Successfully synchronized ${successCount} sample(s) to the central database!`);
+        showToast(`Successfully synchronized ${successCount} sample(s) to the central server!`, 'success');
     }
     
+    localStorage.setItem('lqis_last_sync_time', Date.now().toString());
+    updateLastSynced();
     await loadQueue();
 });
+
+function updateLastSynced() {
+    const lastSyncEl = document.getElementById('lastSyncTimeDisplay');
+    if (!lastSyncEl) return;
+    
+    const lastTime = localStorage.getItem('lqis_last_sync_time');
+    if (!lastTime) {
+        lastSyncEl.textContent = 'Never';
+        return;
+    }
+    
+    const diffSeconds = Math.floor((Date.now() - parseInt(lastTime)) / 1000);
+    if (diffSeconds < 60) lastSyncEl.textContent = `${diffSeconds} seconds ago`;
+    else if (diffSeconds < 3600) lastSyncEl.textContent = `${Math.floor(diffSeconds/60)} minutes ago`;
+    else lastSyncEl.textContent = `${Math.floor(diffSeconds/3600)} hours ago`;
+}
+
+// Update the relative time every 10 seconds
+setInterval(updateLastSynced, 10000);
 
 document.addEventListener('DOMContentLoaded', () => {
     loadQueue();
     updateStatusUI();
+    updateLastSynced();
 });
 </script>
 <!-- Hidden CSRF for the fetch API -->
