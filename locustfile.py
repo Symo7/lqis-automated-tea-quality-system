@@ -16,11 +16,26 @@ class InspectorAPIUser(HttpUser):
     password = "admin123"
 
     def on_start(self):
+        print(f"!!! STARTING USER AGAINST HOST: {self.host} !!!")
         # We must log in to get a valid Django session/CSRF token since the endpoint requires auth.
-        # Ensure your local server is running with `python manage.py runserver`
-        self.client.post("/login/", {
+        
+        # 1. GET the login page to acquire a CSRF cookie
+        response = self.client.get("/users/login/")
+        csrftoken = response.cookies.get("csrftoken", "")
+        
+        # 2. POST login credentials WITH the CSRF token to pass the Django security check
+        self.client.post("/users/login/", {
             "username": self.username,
-            "password": self.password
+            "password": self.password,
+            "csrfmiddlewaretoken": csrftoken
+        }, headers={"X-CSRFToken": csrftoken})
+
+        # 3. GLobally inject the CSRF token and the strict HTTPS Referer into the bot's session headers
+        # Django's CsrfViewMiddleware requires BOTH of these for any HTTPS JSON payload to be accepted.
+        new_csrf = self.client.cookies.get("csrftoken", csrftoken)
+        self.client.headers.update({
+            "X-CSRFToken": new_csrf,
+            "Referer": f"{self.host}/"
         })
 
     def _generate_valid_payload(self) -> dict:

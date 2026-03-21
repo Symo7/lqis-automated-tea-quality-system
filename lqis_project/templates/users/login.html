@@ -13,6 +13,7 @@
       </div>
     </div>
     
+    {% if demo_mode_enabled %}
     <div class="card border-primary" style="border-width: 2px;">
       <div class="card-header bg-primary text-white fw-bold">
         <i class="bi bi-rocket-takeoff position-relative me-1" style="top: -1px;"></i> Product Demonstration
@@ -25,6 +26,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
