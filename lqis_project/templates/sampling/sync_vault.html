@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}Offline Sync Vault | LQIS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="mb-1">Offline Sync Vault</h4>
+                <p class="text-muted mb-0">Review and upload samples queued locally on this device.</p>
+            </div>
+            <button id="syncAllBtn" class="btn btn-primary btn-lg" disabled>Sync All to Server</button>
+        </div>
+        
+        <div id="connectionStatus" class="alert alert-warning py-2 mb-4">Checking connection...</div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Local ID</th>
+                <th>Timestamp</th>
+                <th>Moisture / Foreign</th>
+                <th>AI Score</th>
+                <th>Image</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="queueTableBody">
+              <tr><td colspan="6" class="text-center text-muted py-4">Checking device storage...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script>
+const DB_NAME = "lqis_database";
+const STORE_NAME = "sync_queue";
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onerror = () => reject("IndexedDB Error");
+    request.onupgradeneeded = (e) => { e.target.result.createObjectStore(STORE_NAME, { keyPath: "local_id" }); };
+    request.onsuccess = (e) => resolve(e.target.result);
+  });
+}
+
+function getAllFromQueue() {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readonly");
+    const req = tx.objectStore(STORE_NAME).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = reject;
+  }));
+}
+
+function deleteFromQueue(local_id) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    tx.objectStore(STORE_NAME).delete(local_id);
+    tx.oncomplete = resolve;tx.onerror = reject;
+  }));
+}
+
+const syncAllBtn = document.getElementById('syncAllBtn');
+const tbody = document.getElementById('queueTableBody');
+const connectionStatus = document.getElementById('connectionStatus');
+let currentQueue = [];
+
+function updateStatusUI() {
+    if (navigator.onLine) {
+        connectionStatus.className = 'alert alert-success py-2 mb-4';
+        connectionStatus.innerHTML = '<i class="bi bi-wifi"></i> Online: Ready to sync data to the central server.';
+        if (currentQueue.length > 0) syncAllBtn.disabled = false;
+    } else {
+        connectionStatus.className = 'alert alert-danger py-2 mb-4';
+        connectionStatus.innerHTML = '<i class="bi bi-wifi-off"></i> Offline: You must connect to the internet to flush the queue.';
+        syncAllBtn.disabled = true;
+    }
+}
+window.addEventListener('online', updateStatusUI);
+window.addEventListener('offline', updateStatusUI);
+
+async function loadQueue() {
+    try {
+        currentQueue = await getAllFromQueue();
+        if (currentQueue.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">The vault is completely empty. No pending samples.</td></tr>';
+            syncAllBtn.disabled = true;
+            syncAllBtn.innerText = 'Sync All to Server';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        currentQueue.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.id = `row-${item.local_id}`;
+            tr.innerHTML = `
+                <td class="font-monospace small text-muted">${item.local_id}</td>
+                <td>${item.intake_timestamp.replace('T', ' ')}</td>
+                <td>${item.moisture_pct}% / ${item.foreign_matter_pct}%</td>
+                <td>${item.manual_override_pluck_score}</td>
+                <td>
+                   ${item.image_data_url ? '<span class="badge bg-secondary"><i class="bi bi-camera"></i> Attached</span>' : '<span class="text-muted">None</span>'}
+                </td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-outline-danger" onclick="discardItem('${item.local_id}')">Discard</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        syncAllBtn.innerText = `Sync ${currentQueue.length} Items`;
+        updateStatusUI();
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Error reading IndexedDB storage.</td></tr>';
+    }
+}
+
+window.discardItem = async function(local_id) {
+    if(confirm('Are you sure you want to permanently delete this offline sample from your device?')) {
+        await deleteFromQueue(local_id);
+        loadQueue();
+    }
+}
+
+syncAllBtn.addEventListener('click', async () => {
+    if (!navigator.onLine) return;
+    
+    syncAllBtn.disabled = true;
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < currentQueue.length; i++) {
+        const item = currentQueue[i];
+        syncAllBtn.innerText = `Syncing ${i + 1} of ${currentQueue.length}...`;
+        const row = document.getElementById(`row-${item.local_id}`);
+        if(row) row.classList.add('table-warning');
+
+        try {
+            // We use the same high-speed endpoint established during the Locust test
+            const response = await fetch('/sampling/sync-submit/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                },
+                body: JSON.stringify(item)
+            });
+
+            if (response.ok) {
+                await deleteFromQueue(item.local_id);
+                if(row) {
+                    row.classList.remove('table-warning');
+                    row.classList.add('table-success');
+                }
+                successCount++;
+            } else {
+                if(row) {
+                    row.classList.remove('table-warning');
+                    row.classList.add('table-danger');
+                }
+                failCount++;
+            }
+        } catch (e) {
+            failCount++;
+        }
+    }
+
+    if (failCount > 0) {
+        alert(`${successCount} synced securely. ${failCount} failed (likely validation errors or rate limiting). Please review red rows.`);
+    } else {
+        alert(`Successfully synchronized ${successCount} sample(s) to the central database!`);
+    }
+    
+    await loadQueue();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadQueue();
+    updateStatusUI();
+});
+</script>
+<!-- Hidden CSRF for the fetch API -->
+<form style="display:none;">{% csrf_token %}</form>
+{% endblock %}

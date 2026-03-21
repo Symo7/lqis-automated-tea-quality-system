@@ -56,6 +56,34 @@
 {% block scripts %}
 {{ block.super }}
 <script>
+// --- IndexedDB Offline Sync Queue Engine ---
+const DB_NAME = "lqis_database";
+const STORE_NAME = "sync_queue";
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onerror = () => reject("IndexedDB Error");
+    request.onupgradeneeded = (e) => { e.target.result.createObjectStore(STORE_NAME, { keyPath: "local_id" }); };
+    request.onsuccess = (e) => resolve(e.target.result);
+  });
+}
+
+function saveToSyncQueue(payload) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    tx.objectStore(STORE_NAME).put(payload);
+    tx.oncomplete = resolve;tx.onerror = reject;
+  }));
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader(); r.readAsDataURL(file);
+    r.onload = () => resolve(r.result); r.onerror = reject;
+  });
+}
+
 const imageInput = document.getElementById('id_leaf_image');
 if (imageInput) imageInput.setAttribute('accept', 'image/*;capture=camera');
 const preview = document.getElementById('preview');
@@ -74,89 +102,101 @@ let keepUpdatingTime = true;
 function updateLiveTime() {
   if (keepUpdatingTime && timestampInput) {
     const now = new Date();
-    // Format required for datetime-local input: YYYY-MM-DDTHH:MM
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const year = now.getFullYear(); const month = String(now.getMonth() + 1).padStart(2, '0'); const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0'); const minutes = String(now.getMinutes()).padStart(2, '0');
     timestampInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 }
 if (timestampInput) {
   timestampInput.addEventListener('focus', () => { keepUpdatingTime = false; });
   timestampInput.addEventListener('change', () => { keepUpdatingTime = false; });
-  setInterval(updateLiveTime, 1000);
-  updateLiveTime();
+  setInterval(updateLiveTime, 1000); updateLiveTime();
 }
 
 function estimateQuality(basePluck=70){
   const pluck = Number(overrideInput?.value || basePluck || 70);
-  const m = Number(moistureInput?.value || 0);
-  const f = Number(foreignInput?.value || 0);
-  const moisturePenalty = Math.max(0, (m - 7) * 3.5);
-  const foreignPenalty = Math.max(0, f * 8);
-  const score = Math.max(0, Math.min(100, (pluck * 0.7) + (30 - moisturePenalty - foreignPenalty))).toFixed(2);
+  const m = Number(moistureInput?.value || 0); const f = Number(foreignInput?.value || 0);
+  const mPenalty = Math.max(0, (m - 7) * 3.5); const fPenalty = Math.max(0, f * 8);
+  const score = Math.max(0, Math.min(100, (pluck * 0.7) + (30 - mPenalty - fPenalty))).toFixed(2);
   let status = 'Reject';
   if (score >= 85) status = 'Excellent'; else if (score >= 70) status = 'Acceptable'; else if (score >= 50) status = 'Warning';
-  
-  qualityPreview.innerHTML = `
-    <strong>${score}</strong> / 100 — <span class="badge-status status-${status}">${status}</span>
-    <div class="mt-2 small opacity-75"><strong>Thresholds:</strong> &ge;85 (Excellent) &middot; &ge;70 (Acceptable) &middot; &ge;50 (Warning) &middot; &lt;50 (Reject)</div>
-  `;
+  qualityPreview.innerHTML = `<strong>${score}</strong> / 100 — <span class="badge-status status-${status}">${status}</span><div class="mt-2 small opacity-75"><strong>Thresholds:</strong> &ge;85 (Excellent) &middot; &ge;70 (Acceptable) &middot; &ge;50 (Warning) &middot; &lt;50 (Reject)</div>`;
 }
 
 async function refreshFactoryLinkedOptions(){
   if (!navigator.onLine) return;
-  const f=factorySelect?.value;
-  if(!f) return;
+  const f=factorySelect?.value; if(!f) return;
   try {
-    const res=await fetch(`/sampling/factory-options/${f}/`);
-    const data=await res.json();
+    const res=await fetch(`/sampling/factory-options/${f}/`); const data=await res.json();
     if(centerSelect){centerSelect.innerHTML=''; data.centers.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.text=`${c.name} (${c.code})`;centerSelect.appendChild(o);});}
     if(batchSelect){batchSelect.innerHTML=''; data.batches.forEach(b=>{const o=document.createElement('option');o.value=b.id;o.text=b.batch_code;batchSelect.appendChild(o);});}
   } catch (_) {}
 }
-
 if(factorySelect){factorySelect.addEventListener('change', refreshFactoryLinkedOptions);}
 if(factorySelect && factorySelect.value){refreshFactoryLinkedOptions();}
 
 if (imageInput) {
   imageInput.setAttribute('capture', 'environment');
   imageInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    preview.src = URL.createObjectURL(file);
-    preview.classList.remove('d-none');
-
-    if (!navigator.onLine) {
-      predBox.innerHTML = '<span class="text-warning">Offline: AI preview unavailable now, but image will be queued for sync.</span>';
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('leaf_image', file);
-    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    const file = e.target.files[0]; if (!file) return;
+    preview.src = URL.createObjectURL(file); preview.classList.remove('d-none');
+    if (!navigator.onLine) { predBox.innerHTML = '<span class="text-warning">Offline: AI preview unavailable now, but image will be queued for sync.</span>'; return; }
+    const formData = new FormData(); formData.append('leaf_image', file); formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
     const res = await fetch('{% url "sampling:prediction-preview" %}', {method:'POST', body: formData});
-    if (res.ok) {
-      const data = await res.json();
-      predBox.innerHTML = `<div class="fw-semibold">${data.predicted_pluck_class} (${data.predicted_pluck_score})</div><div>Confidence: ${data.confidence}%</div>`;
-      estimateQuality(data.predicted_pluck_score);
-    }
+    if (res.ok) { const data = await res.json(); predBox.innerHTML = `<div class="fw-semibold">${data.predicted_pluck_class} (${data.predicted_pluck_score})</div><div>Confidence: ${data.confidence}%</div>`; estimateQuality(data.predicted_pluck_score); }
   });
 }
-
 [moistureInput, foreignInput, overrideInput].forEach(el => el && el.addEventListener('input', () => estimateQuality()));
 estimateQuality();
+
 function updateConnectionNote(){
-  const note=document.getElementById('samplingConnectionNote');
-  if(!note) return;
+  const note=document.getElementById('samplingConnectionNote'); if(!note) return;
   if(navigator.onLine){note.className='alert alert-success py-2 small';note.textContent='Online mode: submissions go directly to server.';}
   else {note.className='alert alert-warning py-2 small';note.textContent='Offline mode: submissions are queued locally and auto-sync later.';}
 }
-window.addEventListener('online', updateConnectionNote);
-window.addEventListener('offline', updateConnectionNote);
-updateConnectionNote();
+window.addEventListener('online', updateConnectionNote); window.addEventListener('offline', updateConnectionNote); updateConnectionNote();
 
+const form = document.getElementById('samplingForm');
+form.addEventListener('submit', async (e) => {
+  if (!navigator.onLine) {
+    e.preventDefault(); // Stop native submission
+    const submitBtn = document.getElementById('submitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true; submitBtn.innerHTML = 'Queueing Offline...';
+
+    try {
+        const payload = {
+            local_id: 'sync_' + new Date().getTime() + '_' + Math.random().toString(36).substr(2,9),
+            factory: document.getElementById('id_factory').value,
+            tea_buying_center: document.getElementById('id_tea_buying_center').value,
+            supplier: document.getElementById('id_supplier').value,
+            batch: document.getElementById('id_batch').value,
+            intake_timestamp: document.getElementById('id_intake_timestamp').value,
+            moisture_pct: document.getElementById('id_moisture_pct').value,
+            foreign_matter_pct: document.getElementById('id_foreign_matter_pct').value,
+            notes: document.getElementById('id_notes').value,
+            manual_override_pluck_score: document.getElementById('id_manual_override_pluck_score').value,
+            image_data_url: ""
+        };
+
+        const file = document.getElementById('id_leaf_image').files[0];
+        if (file) { payload.image_data_url = await fileToBase64(file); }
+
+        await saveToSyncQueue(payload);
+        
+        // Reset the form silently so they can continue working without reloading the page
+        form.reset();
+        preview.classList.add('d-none');
+        predBox.innerHTML = '<span class="text-warning">Image queued directly to Sync Vault.</span>';
+        keepUpdatingTime = true; updateLiveTime();
+        
+        alert("You are offline. Sample capture securely saved to the Sync Vault!");
+    } catch (err) {
+        alert("Failed to save offline. Please check your storage settings.");
+    } finally {
+        submitBtn.disabled = false; submitBtn.innerHTML = originalText;
+    }
+  }
+});
 </script>
 {% endblock %}

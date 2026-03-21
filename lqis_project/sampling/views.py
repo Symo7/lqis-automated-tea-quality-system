@@ -21,6 +21,14 @@ from sampling.forms import FactoryIntakeSampleForm, SupervisorDecisionForm
 from sampling.models import FactoryIntakeSample, SampleDecisionHistory
 from sampling.services import calculate_quality, refresh_alerts
 
+@login_required
+@role_required("Inspector", "Factory Manager", "Supervisor", "Admin")
+def sync_vault_view(request):
+    """
+    Renders the offline synchronization vault UI, allowing Inspectors
+    to view and flush their IndexedDB queues to the central server.
+    """
+    return render(request, "sampling/sync_vault.html")
 
 @login_required
 @role_required("Inspector", "Admin")
