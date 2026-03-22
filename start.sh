@@ -7,3 +7,5 @@ python lqis_project/manage.py qcluster &
 
 echo "Starting Gunicorn Web Server..."
 cd lqis_project && gunicorn lqis_project.wsgi:application --bind 0.0.0.0:$PORT
+
+# LF Enforced for Render
