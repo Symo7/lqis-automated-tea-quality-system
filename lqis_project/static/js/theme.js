@@ -11,11 +11,20 @@
 
   function applyTheme(theme) {
     root.setAttribute('data-theme', theme);
+    root.setAttribute('data-bs-theme', theme); // Native Bootstrap 5.3 dark mode support
     localStorage.setItem(storageKey, theme);
     const btn = document.getElementById('themeToggle');
     if (btn) btn.textContent = theme === 'dark' ? '☀ Light' : '🌙 Dark';
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
   }
+
+  // Listen for real-time OS theme changes if user hasn't forced a preference
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    // Optional: Only auto-switch if user hasn't manually overridden it, or just strictly follow OS:
+    // We strictly follow OS if changed, overriding localStorage to keep it in sync with their machine.
+    const newTheme = e.matches ? 'dark' : 'light';
+    applyTheme(newTheme);
+  });
 
   async function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) return;
