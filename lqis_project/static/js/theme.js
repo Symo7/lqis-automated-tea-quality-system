@@ -17,15 +17,6 @@
     if (btn) btn.textContent = theme === 'dark' ? '☀ Light' : '🌙 Dark';
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
   }
-
-  // Listen for real-time OS theme changes if user hasn't forced a preference
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    // Optional: Only auto-switch if user hasn't manually overridden it, or just strictly follow OS:
-    // We strictly follow OS if changed, overriding localStorage to keep it in sync with their machine.
-    const newTheme = e.matches ? 'dark' : 'light';
-    applyTheme(newTheme);
-  });
-
   async function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) return;
     try {
@@ -60,6 +51,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     applyTheme(preferredTheme());
+    
     const btn = document.getElementById('themeToggle');
     if (btn) {
       btn.addEventListener('click', () => {
@@ -67,6 +59,24 @@
         applyTheme(next);
       });
     }
+
+    // Safely listen for real-time OS theme changes cross-browser
+    try {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const themeChangeHandler = (e) => {
+        const newTheme = e.matches ? 'dark' : 'light';
+        applyTheme(newTheme);
+      };
+      
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', themeChangeHandler);
+      } else if (mediaQuery.addListener) {
+        mediaQuery.addListener(themeChangeHandler); // Safari < 14 fallback
+      }
+    } catch (err) {
+      console.warn("Theme auto-detection not supported", err);
+    }
+
     setupInstallPrompt();
     registerServiceWorker();
   });
