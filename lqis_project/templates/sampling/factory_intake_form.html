@@ -9,7 +9,7 @@
         <p class="text-muted mb-2"><strong>Sampling Point: Factory Intake</strong></p>
         <div id="samplingConnectionNote" class="alert alert-success py-2 small">Online mode: submissions go directly to server.</div>
         <form method="post" enctype="multipart/form-data" id="samplingForm">{% csrf_token %}
-          <div class="row g-2">
+          <div class="row g-3">
             <div class="col-md-6">{{ form.factory.label_tag }}{{ form.factory }}</div>
             <div class="col-md-6">{{ form.tea_buying_center.label_tag }}{{ form.tea_buying_center }}</div>
             <div class="col-md-6">{{ form.supplier.label_tag }}{{ form.supplier }}</div>
