@@ -27,7 +27,7 @@ html[data-theme='dark'] {
 }
 
 body { background: var(--bg); color: var(--text); transition: background .25s ease, color .25s ease; }
-.nav-glass { background: color-mix(in srgb, var(--surface) 85%, transparent); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+.nav-glass { background: color-mix(in srgb, var(--surface) 80%, transparent); border-bottom: 2px solid var(--border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
 .brand-word { font-weight: 700; letter-spacing: .05em; color: var(--primary); }
 .nav-link, .navbar-brand, .user-chip { color: var(--text) !important; }
 
@@ -89,7 +89,7 @@ html[data-theme='dark'] .alert-info { background: #1a3c4a; color: #6fb2cf; borde
 .empty-state { border:1px dashed var(--border); border-radius:1rem; padding:1.4rem; text-align:center; color:var(--muted); background:var(--surface); }
 
 /* Message Auto-dismiss Animation */
-.alert-dismiss-auto { animation: fadeOut 0.5s ease 4s forwards; }
+.alert-dismiss-auto { animation: fadeOut 0.5s ease 2s forwards; }
 @keyframes fadeOut { 
   to { opacity: 0; visibility: hidden; position: absolute; height: 0; padding: 0; margin: 0; pointer-events: none; border: none; overflow: hidden; } 
 }

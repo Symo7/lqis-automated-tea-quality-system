@@ -22,6 +22,7 @@ class FactoryIntakeSampleForm(forms.ModelForm):
         ]
         widgets = {
             "intake_timestamp": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "leaf_image": forms.ClearableFileInput(attrs={"accept": "image/*", "capture": "environment"}),
         }
 
     def __init__(self, *args, **kwargs):

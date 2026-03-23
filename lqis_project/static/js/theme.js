@@ -11,12 +11,11 @@
 
   function applyTheme(theme) {
     root.setAttribute('data-theme', theme);
-    root.setAttribute('data-bs-theme', theme); // Native Bootstrap 5.3 dark mode support
+    root.setAttribute('data-bs-theme', theme);
     localStorage.setItem(storageKey, theme);
-    const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = theme === 'dark' ? '☀ Light' : '🌙 Dark';
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
   }
+
   async function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) return;
     try {
@@ -51,27 +50,15 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     applyTheme(preferredTheme());
-    
-    const btn = document.getElementById('themeToggle');
-    if (btn) {
-      btn.addEventListener('click', () => {
-        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        applyTheme(next);
-      });
-    }
 
-    // Safely listen for real-time OS theme changes cross-browser
+    // Listen for real-time OS theme changes
     try {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const themeChangeHandler = (e) => {
-        const newTheme = e.matches ? 'dark' : 'light';
-        applyTheme(newTheme);
-      };
-      
+      const handler = (e) => applyTheme(e.matches ? 'dark' : 'light');
       if (mediaQuery.addEventListener) {
-        mediaQuery.addEventListener('change', themeChangeHandler);
+        mediaQuery.addEventListener('change', handler);
       } else if (mediaQuery.addListener) {
-        mediaQuery.addListener(themeChangeHandler); // Safari < 14 fallback
+        mediaQuery.addListener(handler);
       }
     } catch (err) {
       console.warn("Theme auto-detection not supported", err);
@@ -81,3 +68,4 @@
     registerServiceWorker();
   });
 })();
+

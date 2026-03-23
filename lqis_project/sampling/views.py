@@ -140,7 +140,7 @@ def sync_submit(request):
 
 
 @login_required
-@role_required("Inspector", "Admin")
+@role_required("Inspector", "Supervisor", "Admin")
 def sample_list(request):
     decision = request.GET.get("decision", "")
     date_str = request.GET.get("date", "")

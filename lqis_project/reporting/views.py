@@ -101,7 +101,7 @@ def daily_report(request):
 
 def export_csv(qs):
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = f'attachment; filename="lqis-report-{datetime.now().date()}.csv"'
+    response["Content-Disposition"] = f'attachment; filename="lqis-report-{timezone.now().strftime("%Y-%m-%d_%H%M")}.csv"'
     writer = csv.writer(response)
     writer.writerow([
         "Timestamp",
@@ -189,7 +189,7 @@ def export_xlsx(qs):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    resp["Content-Disposition"] = f'attachment; filename="lqis-report-{datetime.now().date()}.xlsx"'
+    resp["Content-Disposition"] = f'attachment; filename="lqis-report-{timezone.now().strftime("%Y-%m-%d_%H%M")}.xlsx"'
     return resp
 
 
@@ -207,7 +207,7 @@ def export_pdf(qs):
     p.setFont("Helvetica-Bold", 12)
     p.drawString(40, height - 40, "LQIS Report Summary")
     p.setFont("Helvetica", 9)
-    p.drawString(40, height - 56, f"Generated at: {datetime.now().isoformat(timespec='minutes')}")
+    p.drawString(40, height - 56, f"Generated at: {timezone.now().strftime('%Y-%m-%d %H:%M')}")
 
     y = height - 80
     p.setFont("Helvetica-Bold", 8)
@@ -238,5 +238,5 @@ def export_pdf(qs):
     p.save()
     output.seek(0)
     resp = HttpResponse(output.read(), content_type="application/pdf")
-    resp["Content-Disposition"] = f'attachment; filename="lqis-report-{datetime.now().date()}.pdf"'
+    resp["Content-Disposition"] = f'attachment; filename="lqis-report-{timezone.now().strftime("%Y-%m-%d_%H%M")}.pdf"'
     return resp

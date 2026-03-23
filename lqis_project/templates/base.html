@@ -45,7 +45,6 @@
         <button class="btn btn-sm btn-outline-success" data-bs-toggle="offcanvas" data-bs-target="#syncQueueCanvas">
           Queue <span id="queueCountBadge" class="badge text-bg-success">0</span>
         </button>
-        <button id="themeToggle" class="btn btn-sm btn-outline-success">🌙 Dark</button>
         <button id="installBtn" class="btn btn-sm btn-outline-success d-none">Install App</button>
         {% if request.user.is_authenticated %}
           <span class="user-chip">{{ request.user.username }}</span>
@@ -105,7 +104,7 @@ window.showToast = function(message, type='info') {
     el.className = `alert alert-${type} shadow alert-dismissible fade show`;
     el.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
     container.appendChild(el);
-    setTimeout(() => { el.classList.remove('show'); setTimeout(()=>el.remove(), 150); }, 4500);
+    setTimeout(() => { el.classList.remove('show'); setTimeout(()=>el.remove(), 150); }, 2500);
 };
 </script>
 <script src="{% static 'js/theme.js' %}"></script>

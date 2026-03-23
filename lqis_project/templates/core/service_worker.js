@@ -1,8 +1,10 @@
-const CACHE_NAME = 'lqis-shell-v4';
+const CACHE_NAME = 'lqis-shell-v5';
 const OFFLINE_URL = '/offline/';
 const STATIC_ASSETS = [
   '/',
   OFFLINE_URL,
+  '/sampling/factory-intake/',
+  '/sampling/sync-vault/',
   '/static/css/main.css',
   '/static/js/theme.js',
   '/static/js/offline_queue.js',
