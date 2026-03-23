@@ -15,16 +15,8 @@
 
 <div class="row g-3 mb-3">
   {% if role == 'Inspector' %}
-  <div class="col-md-4"><a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Today's Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></a></div>
-  {% elif role == 'Supervisor' %}
-  <div class="col-md-4"><a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Today's Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></a></div>
-  <div class="col-md-4"><a href="{% url 'sampling:sample-list' %}?decision=UNDECIDED" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Pending Decisions</div><div class="stat-value" data-counter>{{ pending_decisions }}</div></div></div></a></div>
-  {% else %}
-  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Total Samples</div><div class="stat-value" data-counter>{{ total_samples }}</div></div></div></a></div>
-  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Today's Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></a></div>
-  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}?decision=UNDECIDED" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Pending Decisions</div><div class="stat-value" data-counter>{{ pending_decisions }}</div></div></div></a></div>
-  {% endif %}
-  <div class="col-md-{% if role == 'Inspector' %}4{% elif role == 'Supervisor' %}4{% else %}3{% endif %}">
+  <div class="col-md-6"><a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Today's Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></a></div>
+  <div class="col-md-6">
     <a href="{% url 'sampling:sync-vault' %}" class="text-decoration-none">
       <div class="card stat-card h-100 border-warning" style="background-color: #fffaf0;">
         <div class="card-body">
@@ -34,8 +26,27 @@
       </div>
     </a>
   </div>
+  {% elif role == 'Supervisor' %}
+  <div class="col-md-6"><a href="{% url 'dashboard:overview' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Today's Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></a></div>
+  <div class="col-md-6"><a href="{% url 'dashboard:overview' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Pending Decisions</div><div class="stat-value" data-counter>{{ pending_decisions }}</div></div></div></a></div>
+  {% else %}
+  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Total Samples</div><div class="stat-value" data-counter>{{ total_samples }}</div></div></div></a></div>
+  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Today's Samples</div><div class="stat-value" data-counter>{{ total_today }}</div></div></div></a></div>
+  <div class="col-md-3"><a href="{% url 'sampling:sample-list' %}?decision=UNDECIDED" class="text-decoration-none"><div class="card stat-card h-100"><div class="card-body"><div class="text-muted">Pending Decisions</div><div class="stat-value" data-counter>{{ pending_decisions }}</div></div></div></a></div>
+  <div class="col-md-3">
+    <a href="{% url 'sampling:sync-vault' %}" class="text-decoration-none">
+      <div class="card stat-card h-100 border-warning" style="background-color: #fffaf0;">
+        <div class="card-body">
+            <div class="text-muted"><i class="bi bi-cloud-arrow-up text-warning"></i> Pending Syncs</div>
+            <div class="stat-value text-warning" id="pendingSyncCountDash">0</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endif %}
 </div>
 
+{% if role != 'Supervisor' %}
 <div class="row g-3 mb-4">
     <div class="col-12">
         <a href="{% url 'sampling:sync-vault' %}" class="text-decoration-none">
@@ -54,6 +65,7 @@
         </a>
     </div>
 </div>
+{% endif %}
 
 <div class="row g-3">
   <div class="col-lg-7">

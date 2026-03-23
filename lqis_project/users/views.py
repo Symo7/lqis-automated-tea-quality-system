@@ -29,8 +29,6 @@ def demo_login_view(request, role):
         login(request, demo_user)
         request.session['demo_mode'] = True
         messages.info(request, f"Demonstration Simulator Active: Exploring as a {role.title()}.")
-        if role.lower() == 'supervisor':
-            return redirect("dashboard:overview")
         return redirect("core:home")
         
     messages.error(request, f"Demo Sandbox Offline: Pre-seeded account '{username}' not initialized.")

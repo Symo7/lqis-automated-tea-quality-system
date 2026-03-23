@@ -13,18 +13,18 @@
 </form>
 
 <div class="row g-3 mb-3">
-  <div class="col-md-6 col-xl"><div class="card stat-card position-relative"><div class="card-body"><a href="{% url 'sampling:sample-list' %}" class="stretched-link text-decoration-none text-muted">Today's Intake</a><div class="stat-value" data-counter>{{ summary.total|default:0 }}</div></div></div></div>
-  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Pluck</div><div class="stat-value" data-counter>{{ summary.avg_pluck|default:0|floatformat:1 }}</div></div></div></div>
-  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Moisture</div><div class="stat-value" data-counter>{{ summary.avg_moisture|default:0|floatformat:1 }}%</div></div></div></div>
-  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Foreign</div><div class="stat-value" data-counter>{{ summary.avg_foreign|default:0|floatformat:1 }}%</div></div></div></div>
-  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Quality Score</div><div class="stat-value" data-counter>{{ summary.avg_quality|default:0|floatformat:1 }}</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Today's Intake</div><div class="stat-value" data-counter>{{ summary.total|default:0 }}</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Pluck (Today)</div><div class="stat-value" data-counter>{{ summary.avg_pluck|default:0|floatformat:1 }}</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Moisture (Today)</div><div class="stat-value" data-counter>{{ summary.avg_moisture|default:0|floatformat:1 }}%</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Avg Foreign (Today)</div><div class="stat-value" data-counter>{{ summary.avg_foreign|default:0|floatformat:1 }}%</div></div></div></div>
+  <div class="col-md-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="text-muted">Quality Score (Today)</div><div class="stat-value" data-counter>{{ summary.avg_quality|default:0|floatformat:1 }}</div></div></div></div>
 </div>
 
 <div class="row mb-3">
   <div class="col-12"><div class="card border-primary"><div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0 text-primary">Pending Decisions <span class="badge bg-primary rounded-pill">{{ pending_batches|length }}</span></h5>
-      <a href="{% url 'sampling:sample-list' %}?decision=UNDECIDED" class="btn btn-sm btn-outline-primary">View All</a>
+      <a href="{% url 'dashboard:overview' %}" class="btn btn-sm btn-outline-primary">View All</a>
     </div>
     {% if pending_batches %}
     <div class="table-responsive"><table class="table table-sm align-middle table-hover mb-0">
