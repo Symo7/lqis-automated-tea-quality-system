@@ -16,7 +16,7 @@
 <body>
 <nav class="navbar navbar-expand-lg nav-glass sticky-top">
   <div class="container-fluid px-3 px-lg-4">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+    <a class="navbar-brand d-flex align-items-center gap-2 {% if request.path == '/users/login/' %}d-none{% endif %}" href="{% url 'core:home' %}">
       <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
         <defs><linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#52b788"/><stop offset="100%" stop-color="#2d6a4f"/></linearGradient></defs>
         <path d="M4 18c8-1 12-8 24-10-1 12-9 19-20 20-4 0-5-3-4-10z" fill="url(#leaf)"/>
