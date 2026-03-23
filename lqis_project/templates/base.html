@@ -42,7 +42,7 @@
         <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
         {% endif %}
       </ul>
-      <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="d-flex align-items-center gap-2 flex-wrap {% if request.path == '/users/login/' %}d-none{% endif %}">
         <span id="connectionChip" class="sync-chip"><span class="dot"></span><span id="connectionText">Online</span></span>
         {% if request.user.is_authenticated %}
         <button id="syncNowBtn" class="btn btn-sm btn-outline-success" title="Sync queued submissions">Sync</button>
