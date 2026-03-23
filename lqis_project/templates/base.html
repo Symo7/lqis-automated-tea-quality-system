@@ -41,16 +41,14 @@
       </ul>
       <div class="d-flex align-items-center gap-2">
         <span id="connectionChip" class="sync-chip"><span class="dot"></span><span id="connectionText">Online</span></span>
+        {% if request.user.is_authenticated %}
         <button id="syncNowBtn" class="btn btn-sm btn-outline-success" title="Synchronize queued submissions">Sync Now</button>
         <button class="btn btn-sm btn-outline-success" data-bs-toggle="offcanvas" data-bs-target="#syncQueueCanvas">
           Queue <span id="queueCountBadge" class="badge text-bg-success">0</span>
         </button>
         <button id="installBtn" class="btn btn-sm btn-outline-success d-none">Install App</button>
-        {% if request.user.is_authenticated %}
           <span class="user-chip">{{ request.user.username }}</span>
           <form method="post" action="{% url 'users:logout' %}">{% csrf_token %}<button class="btn btn-sm btn-success">Logout</button></form>
-        {% else %}
-          <a class="btn btn-sm btn-success" href="{% url 'users:login' %}">Login</a>
         {% endif %}
       </div>
     </div>
