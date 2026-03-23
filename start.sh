@@ -5,7 +5,7 @@
 echo "Starting Django Q Cluster in the background..."
 python lqis_project/manage.py qcluster &
 
-echo "Starting Gunicorn Web Server..."
-cd lqis_project && gunicorn lqis_project.wsgi:application --bind 0.0.0.0:$PORT
+echo "Starting Gunicorn Web Server with verbose logging..."
+cd lqis_project && gunicorn lqis_project.wsgi:application --bind 0.0.0.0:$PORT --log-level debug --access-logfile - --error-logfile -
 
 # LF Enforced for Render
