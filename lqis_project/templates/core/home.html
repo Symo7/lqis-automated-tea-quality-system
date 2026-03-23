@@ -22,8 +22,8 @@
     <a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none">
       <div class="card stat-card h-100">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--success-soft);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <div class="stat-icon" style="background: var(--success-soft); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
           <div class="stat-value" data-counter>{{ total_today }}</div>
           <div class="stat-label">Today's Samples</div>
@@ -35,8 +35,8 @@
     <a href="{% url 'sampling:sync-vault' %}" class="text-decoration-none">
       <div class="card stat-card h-100" style="border-color: #f0ad4e;">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--warning-soft);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="stat-icon" style="background: var(--warning-soft); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           </div>
           <div class="stat-value text-warning" id="pendingSyncCountDash">0</div>
           <div class="stat-label">Pending Syncs</div>
@@ -50,8 +50,8 @@
     <a href="{% url 'dashboard:overview' %}" class="text-decoration-none">
       <div class="card stat-card h-100">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--success-soft);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <div class="stat-icon" style="background: var(--success-soft); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
           <div class="stat-value" data-counter>{{ total_today }}</div>
           <div class="stat-label">Today's Samples</div>
@@ -63,8 +63,8 @@
     <a href="{% url 'dashboard:overview' %}" class="text-decoration-none">
       <div class="card stat-card h-100">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--warning-soft);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="stat-icon" style="background: var(--warning-soft); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <div class="stat-value" data-counter>{{ pending_decisions }}</div>
           <div class="stat-label">Pending Decisions</div>
@@ -78,8 +78,8 @@
     <a href="{% url 'sampling:sample-list' %}" class="text-decoration-none">
       <div class="card stat-card h-100">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--surface-3);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div class="stat-icon" style="background: var(--surface-3); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
           <div class="stat-value" data-counter>{{ total_samples }}</div>
           <div class="stat-label">Total Samples</div>
@@ -91,8 +91,8 @@
     <a href="{% url 'sampling:sample-list' %}?date={% now 'Y-m-d' %}" class="text-decoration-none">
       <div class="card stat-card h-100">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--success-soft);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <div class="stat-icon" style="background: var(--success-soft); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
           <div class="stat-value" data-counter>{{ total_today }}</div>
           <div class="stat-label">Today's Samples</div>
@@ -104,8 +104,8 @@
     <a href="{% url 'sampling:sample-list' %}?decision=UNDECIDED" class="text-decoration-none">
       <div class="card stat-card h-100">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--warning-soft);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="stat-icon" style="background: var(--warning-soft); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <div class="stat-value" data-counter>{{ pending_decisions }}</div>
           <div class="stat-label">Pending Decisions</div>
@@ -117,8 +117,8 @@
     <a href="{% url 'sampling:sync-vault' %}" class="text-decoration-none">
       <div class="card stat-card h-100" style="border-color: #f0ad4e;">
         <div class="card-body">
-          <div class="stat-icon" style="background: var(--warning-soft);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="stat-icon" style="background: var(--warning-soft); width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="width:24px;height:24px;max-width:24px;max-height:24px;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           </div>
           <div class="stat-value text-warning" id="pendingSyncCountDash">0</div>
           <div class="stat-label">Pending Syncs</div>
