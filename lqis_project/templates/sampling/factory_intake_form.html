@@ -9,17 +9,20 @@
         <p class="text-muted mb-2"><strong>Sampling Point: Factory Intake</strong></p>
         <div id="samplingConnectionNote" class="alert alert-success py-2 small">Online mode: submissions go directly to server.</div>
         <form method="post" enctype="multipart/form-data" id="samplingForm">{% csrf_token %}
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2 small">{{ form.non_field_errors }}</div>
+          {% endif %}
           <div class="row g-3">
-            <div class="col-md-6">{{ form.factory.label_tag }}{{ form.factory }}</div>
-            <div class="col-md-6">{{ form.tea_buying_center.label_tag }}{{ form.tea_buying_center }}</div>
-            <div class="col-md-6">{{ form.supplier.label_tag }}{{ form.supplier }}</div>
-            <div class="col-md-6">{{ form.batch.label_tag }}{{ form.batch }}</div>
-            <div class="col-md-6">{{ form.intake_timestamp.label_tag }}{{ form.intake_timestamp }}</div>
-            <div class="col-md-6">{{ form.manual_override_pluck_score.label_tag }}{{ form.manual_override_pluck_score }}</div>
-            <div class="col-md-6">{{ form.moisture_pct.label_tag }}{{ form.moisture_pct }}</div>
-            <div class="col-md-6">{{ form.foreign_matter_pct.label_tag }}{{ form.foreign_matter_pct }}</div>
-            <div class="col-12">{{ form.notes.label_tag }}{{ form.notes }}</div>
-            <div class="col-12">{{ form.leaf_image.label_tag }}{{ form.leaf_image }}</div>
+            <div class="col-md-6">{{ form.factory.label_tag }}{{ form.factory }}<div class="text-danger small">{{ form.factory.errors|striptags }}</div></div>
+            <div class="col-md-6">{{ form.tea_buying_center.label_tag }}{{ form.tea_buying_center }}<div class="text-danger small">{{ form.tea_buying_center.errors|striptags }}</div></div>
+            <div class="col-md-6">{{ form.supplier.label_tag }}{{ form.supplier }}<div class="text-danger small">{{ form.supplier.errors|striptags }}</div></div>
+            <div class="col-md-6">{{ form.batch.label_tag }}{{ form.batch }}<div class="text-danger small">{{ form.batch.errors|striptags }}</div></div>
+            <div class="col-md-6">{{ form.intake_timestamp.label_tag }}{{ form.intake_timestamp }}<div class="text-danger small">{{ form.intake_timestamp.errors|striptags }}</div></div>
+            <div class="col-md-6">{{ form.manual_override_pluck_score.label_tag }}{{ form.manual_override_pluck_score }}<div class="text-danger small">{{ form.manual_override_pluck_score.errors|striptags }}</div></div>
+            <div class="col-md-6">{{ form.moisture_pct.label_tag }}{{ form.moisture_pct }}<div class="text-danger small">{{ form.moisture_pct.errors|striptags }}</div></div>
+            <div class="col-md-6">{{ form.foreign_matter_pct.label_tag }}{{ form.foreign_matter_pct }}<div class="text-danger small">{{ form.foreign_matter_pct.errors|striptags }}</div></div>
+            <div class="col-12">{{ form.notes.label_tag }}{{ form.notes }}<div class="text-danger small">{{ form.notes.errors|striptags }}</div></div>
+            <div class="col-12">{{ form.leaf_image.label_tag }}{{ form.leaf_image }}<div class="text-danger small">{{ form.leaf_image.errors|striptags }}</div></div>
           </div>
           <div class="sticky-submit mt-3 d-flex gap-2">
             <button class="btn btn-success btn-lg" id="submitBtn">Save Sample</button>
