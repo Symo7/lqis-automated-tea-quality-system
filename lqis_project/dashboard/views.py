@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import timedelta
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Case, CharField, Count, F, Q, Value, When
 from django.db.models.functions import TruncDate
@@ -206,3 +207,38 @@ def overview(request):
         "alert_distribution_factory": list(alert_distribution_factory),
     }
     return render(request, "dashboard/overview.html", context)
+
+
+@login_required
+@role_required("Admin")
+def admin_dashboard(request):
+    User = get_user_model()
+    
+    total_users = User.objects.filter(is_active=True).count()
+    total_factories = Factory.objects.filter(is_active=True).count()
+    total_samples = FactoryIntakeSample.objects.count()
+    total_alerts = QualityAlert.objects.count()
+    
+    today = timezone.localdate()
+    today_samples_count = FactoryIntakeSample.objects.filter(intake_timestamp__date=today).count()
+    today_alerts_count = QualityAlert.objects.filter(created_at__date=today).count()
+    
+    inspector_activity = (
+        FactoryIntakeSample.objects.values("inspector__username", "inspector__first_name", "inspector__last_name")
+        .annotate(total=Count("id"))
+        .order_by("-total")[:10]
+    )
+    
+    recent_samples = FactoryIntakeSample.objects.select_related("factory", "inspector", "batch").order_by("-intake_timestamp")[:10]
+    
+    context = {
+        "total_users": total_users,
+        "total_factories": total_factories,
+        "total_samples": total_samples,
+        "total_alerts": total_alerts,
+        "today_samples_count": today_samples_count,
+        "today_alerts_count": today_alerts_count,
+        "inspector_activity": list(inspector_activity),
+        "recent_samples": recent_samples,
+    }
+    return render(request, "dashboard/admin_dashboard.html", context)

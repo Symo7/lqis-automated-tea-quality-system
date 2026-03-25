@@ -33,7 +33,7 @@ class FactoryIntakeSample(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.PROTECT, related_name="samples")
     intake_timestamp = models.DateTimeField()
     inspector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="inspected_samples")
-    leaf_image = models.ImageField(upload_to="samples/")
+    leaf_image = models.ImageField(upload_to="samples/", blank=True, null=True)
     client_submission_id = models.CharField(max_length=64, blank=True, null=True, unique=True)
 
     predicted_pluck_class = models.CharField(max_length=20, choices=PLUCK_CLASSES)
@@ -90,10 +90,23 @@ class FactoryIntakeSample(models.Model):
 
     def save(self, *args, **kwargs):
         if self.leaf_image and (not self.predicted_pluck_score or not self.predicted_pluck_class):
-            prediction = run_baseline_prediction(self.leaf_image)
-            self.predicted_pluck_class = prediction["predicted_pluck_class"]
-            self.predicted_pluck_score = prediction["predicted_pluck_score"]
-            self.prediction_confidence = Decimal(str(prediction["confidence"]))
+            try:
+                prediction = run_baseline_prediction(self.leaf_image)
+                self.predicted_pluck_class = prediction["predicted_pluck_class"]
+                self.predicted_pluck_score = prediction["predicted_pluck_score"]
+                self.prediction_confidence = Decimal(str(prediction["confidence"]))
+            except Exception:
+                pass
+        # Fallback if prediction failed or no image was provided
+        if not self.predicted_pluck_class:
+            val = self.manual_override_pluck_score or 0
+            if val >= 85: self.predicted_pluck_class = "Excellent"
+            elif val >= 70: self.predicted_pluck_class = "Good"
+            elif val >= 50: self.predicted_pluck_class = "Fair"
+            else: self.predicted_pluck_class = "Poor"
+            self.predicted_pluck_score = 0
+            self.prediction_confidence = Decimal("0.00")
+            
         super().save(*args, **kwargs)
 
 

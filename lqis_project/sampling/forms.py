@@ -22,7 +22,7 @@ class FactoryIntakeSampleForm(forms.ModelForm):
         ]
         widgets = {
             "intake_timestamp": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "leaf_image": forms.ClearableFileInput(attrs={"accept": "image/*", "capture": "environment"}),
+            "leaf_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -55,6 +55,12 @@ class FactoryIntakeSampleForm(forms.ModelForm):
             
         if batch and tea_buying_center and batch.buying_center_id != tea_buying_center.id:
             self.add_error("batch", "Selected batch does not belong to selected buying center.")
+
+        # Require leaf_image only if no manual override pluck score is provided
+        manual_override = cleaned_data.get("manual_override_pluck_score")
+        leaf_image = cleaned_data.get("leaf_image")
+        if not manual_override and not leaf_image:
+            self.add_error("leaf_image", "A leaf image is required unless a manual override pluck score is provided.")
 
         return cleaned_data
 

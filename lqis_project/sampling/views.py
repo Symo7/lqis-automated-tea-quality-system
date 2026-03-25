@@ -100,20 +100,20 @@ def sync_submit(request):
         return JsonResponse({"error": "Referenced master data no longer valid on server."}, status=400)
 
     image_data = payload.get("image_data_url")
-    if not image_data or "," not in image_data:
-        return JsonResponse({"error": "Missing image data."}, status=400)
-
-    meta, b64 = image_data.split(",", 1)
-    ext = "jpg"
-    if "image/png" in meta:
-        ext = "png"
-    elif "image/webp" in meta:
-        ext = "webp"
-
-    try:
-        file_content = ContentFile(base64.b64decode(b64), name=f"offline-{client_id}.{ext}")
-    except Exception:
-        return JsonResponse({"error": "Invalid image encoding."}, status=400)
+    file_content = None
+    if image_data and "," in image_data:
+        meta, b64 = image_data.split(",", 1)
+        ext = "jpg"
+        if "image/png" in meta:
+            ext = "png"
+        elif "image/webp" in meta:
+            ext = "webp"
+        try:
+            file_content = ContentFile(base64.b64decode(b64), name=f"offline-{client_id}.{ext}")
+        except Exception:
+            return JsonResponse({"error": "Invalid image encoding."}, status=400)
+    elif not payload.get("manual_override_pluck_score"):
+        return JsonResponse({"error": "Missing image data and no manual override provided."}, status=400)
 
     sample = FactoryIntakeSample(
         factory=factory,

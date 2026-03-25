@@ -15,24 +15,49 @@
       <div class="card-body" style="padding: 28px;">
         <h5 class="mb-3">Sign in</h5>
         <form method="post">{% csrf_token %}
-          {{ form.as_p }}
+          <div class="mb-3">
+            <label for="id_username" class="form-label">Username</label>
+            {{ form.username }}
+          </div>
+          <div class="mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            <div class="input-group">
+              {{ form.password }}
+              <button type="button" class="btn btn-outline-secondary" id="togglePassword" tabindex="-1" title="Show password" style="border-color: var(--border);">
+                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          {% if form.errors %}
+          <div class="alert alert-danger py-2 small mb-3">Invalid username or password.</div>
+          {% endif %}
           <button class="btn btn-success btn-lg w-100 mt-2">Sign In</button>
         </form>
       </div>
     </div>
-
-    {% if demo_mode_enabled %}
-    <div class="card mt-3" style="border-color: var(--primary); border-width: 1px;">
-      <div class="card-body" style="padding: 20px;">
-        <p class="small fw-semibold mb-1" style="color: var(--primary);">Product Demo</p>
-        <p class="small text-muted mb-3">Explore the platform with pre-seeded sandbox accounts.</p>
-        <div class="d-grid gap-2">
-          <a href="{% url 'users:demo_login' role='inspector' %}" class="btn btn-outline-success btn-sm fw-semibold">Try as Inspector</a>
-          <a href="{% url 'users:demo_login' role='supervisor' %}" class="btn btn-outline-secondary btn-sm fw-semibold">Try as Supervisor</a>
-        </div>
-      </div>
-    </div>
-    {% endif %}
   </div>
 </div>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggle = document.getElementById('togglePassword');
+  const pwField = document.getElementById('id_password');
+  const eyeIcon = document.getElementById('eyeIcon');
+  if (toggle && pwField) {
+    toggle.addEventListener('click', function() {
+      const isPassword = pwField.type === 'password';
+      pwField.type = isPassword ? 'text' : 'password';
+      eyeIcon.innerHTML = isPassword
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+        : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      toggle.title = isPassword ? 'Hide password' : 'Show password';
+    });
+  }
+});
+</script>
 {% endblock %}
