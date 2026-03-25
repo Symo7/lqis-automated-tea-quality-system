@@ -34,7 +34,7 @@ def sync_vault_view(request):
 @role_required("Inspector", "Admin")
 def factory_options(request, factory_id: int):
     centers = list(TeaBuyingCenter.objects.filter(factory_id=factory_id).values("id", "name", "code"))
-    batches = list(Batch.objects.filter(factory_id=factory_id).values("id", "batch_code"))
+    batches = list(Batch.objects.filter(factory_id=factory_id).values("id", "batch_code", "buying_center_id", "supplier_id"))
     return JsonResponse({"centers": centers, "batches": batches})
 
 

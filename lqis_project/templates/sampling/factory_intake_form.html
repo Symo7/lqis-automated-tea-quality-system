@@ -126,16 +126,50 @@ function estimateQuality(basePluck=70){
   qualityPreview.innerHTML = `<strong>${score}</strong> / 100 — <span class="badge-status status-${status}">${status}</span><div class="mt-2 small opacity-75"><strong>Thresholds:</strong> &ge;85 (Excellent) &middot; &ge;70 (Acceptable) &middot; &ge;50 (Warning) &middot; &lt;50 (Reject)</div>`;
 }
 
+let allFactoryBatches = [];
+
+function filterBatches() {
+  if (!batchSelect) return;
+  const currentBatch = batchSelect.value;
+  batchSelect.innerHTML = '<option value="">---------</option>';
+  
+  const c = centerSelect?.value;
+  const s = document.getElementById('id_supplier')?.value;
+  
+  let validBatches = allFactoryBatches;
+  if (c) validBatches = validBatches.filter(b => String(b.buying_center_id) === String(c));
+  if (s) validBatches = validBatches.filter(b => String(b.supplier_id) === String(s));
+  
+  validBatches.forEach(b => {
+    const o = document.createElement('option');
+    o.value = b.id;
+    o.text = b.batch_code;
+    batchSelect.appendChild(o);
+  });
+  batchSelect.value = currentBatch;
+}
+
 async function refreshFactoryLinkedOptions(){
   if (!navigator.onLine) return;
   const f=factorySelect?.value; if(!f) return;
   try {
     const res=await fetch(`/sampling/factory-options/${f}/`); const data=await res.json();
-    if(centerSelect){centerSelect.innerHTML=''; data.centers.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.text=`${c.name} (${c.code})`;centerSelect.appendChild(o);});}
-    if(batchSelect){batchSelect.innerHTML=''; data.batches.forEach(b=>{const o=document.createElement('option');o.value=b.id;o.text=b.batch_code;batchSelect.appendChild(o);});}
+    if(centerSelect){
+      const currentCenter = centerSelect.value;
+      centerSelect.innerHTML='<option value="">---------</option>'; 
+      data.centers.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.text=`${c.name} (${c.code})`;centerSelect.appendChild(o);});
+      centerSelect.value = currentCenter;
+    }
+    allFactoryBatches = data.batches || [];
+    filterBatches();
   } catch (_) {}
 }
+
 if(factorySelect){factorySelect.addEventListener('change', refreshFactoryLinkedOptions);}
+if(centerSelect){centerSelect.addEventListener('change', filterBatches);}
+const supplierSelect = document.getElementById('id_supplier');
+if(supplierSelect){supplierSelect.addEventListener('change', filterBatches);}
+
 if(factorySelect && factorySelect.value){refreshFactoryLinkedOptions();}
 
 if (imageInput) {
