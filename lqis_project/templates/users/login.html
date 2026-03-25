@@ -38,6 +38,19 @@
         </form>
       </div>
     </div>
+
+    {% if demo_mode_enabled %}
+    <div class="card mt-3" style="border-color: var(--primary); border-width: 1px;">
+      <div class="card-body" style="padding: 20px;">
+        <p class="small fw-semibold mb-1" style="color: var(--primary);">Product Demo</p>
+        <p class="small text-muted mb-3">Explore the platform with pre-seeded sandbox accounts.</p>
+        <div class="d-grid gap-2">
+          <a href="{% url 'users:demo_login' role='inspector' %}" class="btn btn-outline-success btn-sm fw-semibold">Try as Inspector</a>
+          <a href="{% url 'users:demo_login' role='supervisor' %}" class="btn btn-outline-secondary btn-sm fw-semibold">Try as Supervisor</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
