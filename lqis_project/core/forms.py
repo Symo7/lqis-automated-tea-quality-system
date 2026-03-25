@@ -26,6 +26,14 @@ class BatchForm(forms.ModelForm):
         model = Batch
         fields = ["factory", "buying_center", "supplier", "batch_code", "intake_date", "notes"]
 
+    def clean(self):
+        cleaned_data = super().clean()
+        factory = cleaned_data.get("factory")
+        buying_center = cleaned_data.get("buying_center")
+        if factory and buying_center and buying_center.factory_id != factory.id:
+            self.add_error("buying_center", "Selected buying center does not belong to selected factory.")
+        return cleaned_data
+
 
 class FactoryThresholdForm(forms.ModelForm):
     class Meta:

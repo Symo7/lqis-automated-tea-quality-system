@@ -22,3 +22,38 @@
 </div>
 </div>
 {% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Smart Filtering for Batch Creation Form
+  const batchForm = document.querySelector('form[action="{% url \'core:batch-create\' %}"]');
+  if (batchForm) {
+    const factorySelect = batchForm.querySelector('select[name="factory"]');
+    const centerSelect = batchForm.querySelector('select[name="buying_center"]');
+    
+    async function updateBatchCenters() {
+      const f = factorySelect.value;
+      if (!f) return;
+      try {
+        const res = await fetch(`/sampling/factory-options/${f}/`);
+        const data = await res.json();
+        const currentCenter = centerSelect.value;
+        centerSelect.innerHTML = '<option value="">---------</option>';
+        data.centers.forEach(c => {
+          const o = document.createElement('option');
+          o.value = c.id;
+          o.text = `${c.name} (${c.code})`;
+          centerSelect.appendChild(o);
+        });
+        centerSelect.value = currentCenter;
+      } catch (e) {}
+    }
+    
+    factorySelect.addEventListener('change', updateBatchCenters);
+    if (factorySelect.value) { updateBatchCenters(); }
+  }
+});
+</script>
+{% endblock %}
