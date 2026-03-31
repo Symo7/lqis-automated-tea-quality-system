@@ -102,20 +102,20 @@ const timestampInput = document.getElementById('id_intake_timestamp');
 // Reset form on fresh page load to prevent browser autofill from prior sessions
 // Only reset if Django didn't re-render the form with validation errors
 {% if not form.errors %}
-window.addEventListener('pageshow', function(e) {
-  if (e.persisted) {
-    // Page was restored from bfcache (back/forward navigation) — reset
-    document.getElementById('samplingForm').reset();
-  }
-});
-// Also reset selects that browsers love to auto-restore
-document.addEventListener('DOMContentLoaded', function() {
+function resetFormFields() {
+  const form = document.getElementById('samplingForm');
+  if (form) form.reset();
   if (factorySelect) factorySelect.selectedIndex = 0;
   if (centerSelect) centerSelect.selectedIndex = 0;
   if (batchSelect) batchSelect.selectedIndex = 0;
   if (moistureInput) moistureInput.value = '';
   if (foreignInput) foreignInput.value = '';
   if (overrideInput) overrideInput.value = '';
+  if (preview) preview.classList.add('d-none');
+}
+// setTimeout(0) ensures we run AFTER the browser restores cached form values
+window.addEventListener('pageshow', function(e) {
+  setTimeout(resetFormFields, 0);
 });
 {% endif %}
 

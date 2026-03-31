@@ -133,23 +133,37 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Storage Configuration
-_cloudinary_url = os.environ.get('CLOUDINARY_URL', '')
+# Storage Configuration — Cloudinary for persistent media on ephemeral hosts
+import cloudinary as _cloudinary_lib
+
+_cloudinary_url = os.environ.get('CLOUDINARY_URL', '').strip()
+_cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME', '')
+_api_key = os.environ.get('CLOUDINARY_API_KEY', '')
+_api_secret = os.environ.get('CLOUDINARY_API_SECRET', '')
+
+# Try to parse CLOUDINARY_URL first, then fall back to individual env vars
 if _cloudinary_url:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    # Parse CLOUDINARY_URL into explicit settings for django-cloudinary-storage
-    # Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
     try:
         _parsed = _cloudinary_url.replace('cloudinary://', '')
-        _creds, _cloud = _parsed.rsplit('@', 1)
-        _key, _secret = _creds.split(':', 1)
-        CLOUDINARY_STORAGE = {
-            'CLOUD_NAME': _cloud,
-            'API_KEY': _key,
-            'API_SECRET': _secret,
-        }
+        _creds, _cloud_name = _parsed.rsplit('@', 1)
+        _api_key, _api_secret = _creds.split(':', 1)
     except (ValueError, IndexError):
-        pass  # Malformed URL — fallback to cloudinary auto-config from env
+        pass  # Will try individual env vars below
+
+if _cloud_name and _api_key and _api_secret:
+    # Explicitly configure the cloudinary Python package
+    _cloudinary_lib.config(
+        cloud_name=_cloud_name,
+        api_key=_api_key,
+        api_secret=_api_secret,
+        secure=True,
+    )
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': _cloud_name,
+        'API_KEY': _api_key,
+        'API_SECRET': _api_secret,
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
