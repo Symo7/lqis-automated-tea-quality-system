@@ -161,28 +161,29 @@ def sample_list(request):
 
 @login_required
 @role_required("Inspector", "Admin")
-@transaction.atomic
+# Removed @transaction.atomic decorator from here so we can catch exceptions cleanly
 def factory_intake_create(request):
     form = FactoryIntakeSampleForm(request.POST or None, request.FILES or None)
     if request.method == "POST":
         if form.is_valid():
             try:
-                sample = form.save(commit=False)
-                sample.inspector = request.user
-                if not sample.client_submission_id:
-                    sample.client_submission_id = uuid.uuid4().hex
-                sample.save()
-                score, status = calculate_quality(sample)
-                sample.quality_score = score
-                sample.quality_status = status
-                sample.save(update_fields=["quality_score", "quality_status", "updated_at"])
-                refresh_alerts(sample)
+                with transaction.atomic():
+                    sample = form.save(commit=False)
+                    sample.inspector = request.user
+                    if not sample.client_submission_id:
+                        sample.client_submission_id = uuid.uuid4().hex
+                    sample.save()
+                    score, status = calculate_quality(sample)
+                    sample.quality_score = score
+                    sample.quality_status = status
+                    sample.save(update_fields=["quality_score", "quality_status", "updated_at"])
+                    refresh_alerts(sample)
                 logger.info(f"Sample {sample.id} created successfully by user {request.user.id}")
                 messages.success(request, "Factory intake sample saved successfully.")
                 return redirect("sampling:sample-detail", pk=sample.pk)
             except Exception as e:
                 logger.error(f"Sample save failed for user {request.user.id}: {e}", exc_info=True)
-                messages.error(request, f"Error saving sample: {e}")
+                messages.error(request, f"Error saving sample: {str(e)}")
         else:
             logger.warning(f"Form submission failed for user {request.user.id}. Errors: {form.errors.as_json()}")
             messages.error(request, "Please fix form errors and submit again.")
