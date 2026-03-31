@@ -8,7 +8,7 @@
         <h4 class="mb-1">Factory Intake Sampling</h4>
         <p class="text-muted mb-2"><strong>Sampling Point: Factory Intake</strong></p>
         <div id="samplingConnectionNote" class="alert alert-success py-2 small">Online mode: submissions go directly to server.</div>
-        <form method="post" enctype="multipart/form-data" id="samplingForm">{% csrf_token %}
+        <form method="post" enctype="multipart/form-data" id="samplingForm" autocomplete="off">{% csrf_token %}
           {% if form.non_field_errors %}
           <div class="alert alert-danger py-2 small">{{ form.non_field_errors }}</div>
           {% endif %}
@@ -98,6 +98,26 @@ const factorySelect = document.getElementById('id_factory');
 const centerSelect = document.getElementById('id_tea_buying_center');
 const batchSelect = document.getElementById('id_batch');
 const timestampInput = document.getElementById('id_intake_timestamp');
+
+// Reset form on fresh page load to prevent browser autofill from prior sessions
+// Only reset if Django didn't re-render the form with validation errors
+{% if not form.errors %}
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) {
+    // Page was restored from bfcache (back/forward navigation) — reset
+    document.getElementById('samplingForm').reset();
+  }
+});
+// Also reset selects that browsers love to auto-restore
+document.addEventListener('DOMContentLoaded', function() {
+  if (factorySelect) factorySelect.selectedIndex = 0;
+  if (centerSelect) centerSelect.selectedIndex = 0;
+  if (batchSelect) batchSelect.selectedIndex = 0;
+  if (moistureInput) moistureInput.value = '';
+  if (foreignInput) foreignInput.value = '';
+  if (overrideInput) overrideInput.value = '';
+});
+{% endif %}
 
 // Auto-updating timestamp logic
 let keepUpdatingTime = true;

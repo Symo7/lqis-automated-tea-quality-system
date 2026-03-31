@@ -13,7 +13,20 @@
     <div class="card"><div class="card-body">
       <p><strong>Traceability:</strong> {{ sample.factory }} → {{ sample.tea_buying_center }} → {{ sample.supplier }} → {{ sample.batch }}</p>
       <div class="row g-3 align-items-center">
-        <div class="col-md-4">{% if sample.leaf_image %}<img src="{{ sample.leaf_image.url }}" class="img-fluid rounded evidence-thumb w-100 h-auto" data-full="{{ sample.leaf_image.url }}">{% endif %}</div>
+        <div class="col-md-4">
+          {% if sample.leaf_image %}
+          <img src="{{ sample.leaf_image.url }}" class="img-fluid rounded w-100" style="max-height:280px; object-fit:cover; border:1px solid var(--border);" data-full="{{ sample.leaf_image.url }}" onerror="this.onerror=null; this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+          <div class="img-fallback rounded text-center d-flex flex-column align-items-center justify-content-center" style="display:none; background:var(--surface-2); border:1px dashed var(--border); padding:24px; min-height:120px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            <span class="text-muted small mt-2">Image unavailable — may need re-upload</span>
+          </div>
+          {% else %}
+          <div class="rounded text-center d-flex flex-column align-items-center justify-content-center" style="background:var(--surface-2); border:1px dashed var(--border); padding:24px; min-height:120px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            <span class="text-muted small mt-2">No image attached</span>
+          </div>
+          {% endif %}
+        </div>
         <div class="col-md-8">
           <p class="mb-1"><strong>Predicted:</strong> {{ sample.predicted_pluck_class }} / {{ sample.predicted_pluck_score }} ({{ sample.prediction_confidence }}% confidence)</p>
           <p class="mb-1"><strong>Manual Override:</strong> {{ sample.manual_override_pluck_score|default:'None' }}</p>
