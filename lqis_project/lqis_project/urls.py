@@ -13,5 +13,6 @@ urlpatterns = [
     path("reporting/", include("reporting.urls")),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Always serve media files - required for local disk fallback when Cloudinary is not configured.
+# When Cloudinary IS configured, it returns absolute URLs so this route is harmlessly bypassed.
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

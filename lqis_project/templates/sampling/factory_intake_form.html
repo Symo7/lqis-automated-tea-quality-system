@@ -88,7 +88,6 @@ function fileToBase64(file) {
 }
 
 const imageInput = document.getElementById('id_leaf_image');
-if (imageInput) imageInput.setAttribute('accept', 'image/*;capture=camera');
 const preview = document.getElementById('preview');
 const predBox = document.getElementById('predictionBox');
 const qualityPreview = document.getElementById('qualityPreview');
@@ -173,7 +172,6 @@ if(supplierSelect){supplierSelect.addEventListener('change', filterBatches);}
 if(factorySelect && factorySelect.value){refreshFactoryLinkedOptions();}
 
 if (imageInput) {
-  imageInput.setAttribute('capture', 'environment');
   imageInput.addEventListener('change', async (e) => {
     const file = e.target.files[0]; if (!file) return;
     preview.src = URL.createObjectURL(file); preview.classList.remove('d-none');

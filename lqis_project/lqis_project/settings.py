@@ -130,7 +130,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Use WhiteNoise to serve static files efficiently
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Storage Configuration
