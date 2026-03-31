@@ -127,9 +127,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Use WhiteNoise to serve static files efficiently
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -150,8 +147,8 @@ if _cloudinary_url:
     except (ValueError, IndexError):
         pass  # Will try individual env vars below
 
+_media_backend = 'django.core.files.storage.FileSystemStorage'
 if _cloud_name and _api_key and _api_secret:
-    # Explicitly configure the cloudinary Python package
     _cloudinary_lib.config(
         cloud_name=_cloud_name,
         api_key=_api_key,
@@ -163,9 +160,17 @@ if _cloud_name and _api_key and _api_secret:
         'API_KEY': _api_key,
         'API_SECRET': _api_secret,
     }
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    _media_backend = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Django 5.x STORAGES dict (replaces deprecated DEFAULT_FILE_STORAGE & STATICFILES_STORAGE)
+STORAGES = {
+    "default": {
+        "BACKEND": _media_backend,
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
