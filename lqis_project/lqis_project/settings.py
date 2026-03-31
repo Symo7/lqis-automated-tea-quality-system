@@ -54,14 +54,14 @@ if render_external_hostname:
     ALLOWED_HOSTS.append(render_external_hostname)
 
 INSTALLED_APPS = [
-    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'users',
     'core',
     'sampling',
@@ -134,8 +134,22 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Storage Configuration
-if os.environ.get('CLOUDINARY_URL'):
+_cloudinary_url = os.environ.get('CLOUDINARY_URL', '')
+if _cloudinary_url:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    # Parse CLOUDINARY_URL into explicit settings for django-cloudinary-storage
+    # Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+    try:
+        _parsed = _cloudinary_url.replace('cloudinary://', '')
+        _creds, _cloud = _parsed.rsplit('@', 1)
+        _key, _secret = _creds.split(':', 1)
+        CLOUDINARY_STORAGE = {
+            'CLOUD_NAME': _cloud,
+            'API_KEY': _key,
+            'API_SECRET': _secret,
+        }
+    except (ValueError, IndexError):
+        pass  # Malformed URL — fallback to cloudinary auto-config from env
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
