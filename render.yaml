@@ -9,7 +9,7 @@ services:
     name: lqis-web
     env: python
     buildCommand: "./build.sh"
-    startCommand: "cd lqis_project && gunicorn lqis_project.wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "cd lqis_project && gunicorn lqis_project.wsgi:application --bind 0.0.0.0:$PORT --timeout 120 --workers 2 --preload"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
