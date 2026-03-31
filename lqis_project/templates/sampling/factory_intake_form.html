@@ -102,6 +102,7 @@ const timestampInput = document.getElementById('id_intake_timestamp');
 // Reset form on fresh page load to prevent browser autofill from prior sessions
 // Only reset if Django didn't re-render the form with validation errors
 {% if not form.errors %}
+let _pageIsClean = true;  // flag to prevent refreshFactoryLinkedOptions on clean page
 function resetFormFields() {
   const form = document.getElementById('samplingForm');
   if (form) form.reset();
@@ -112,11 +113,14 @@ function resetFormFields() {
   if (foreignInput) foreignInput.value = '';
   if (overrideInput) overrideInput.value = '';
   if (preview) preview.classList.add('d-none');
+  _pageIsClean = true;
 }
-// setTimeout(0) ensures we run AFTER the browser restores cached form values
+// 500ms delay beats Chrome's async autofill which ignores autocomplete='off'
 window.addEventListener('pageshow', function(e) {
-  setTimeout(resetFormFields, 0);
+  setTimeout(resetFormFields, 500);
 });
+{% else %}
+let _pageIsClean = false;  // form has errors, don't block refreshFactoryLinkedOptions
 {% endif %}
 
 // Auto-updating timestamp logic
@@ -189,7 +193,8 @@ if(centerSelect){centerSelect.addEventListener('change', filterBatches);}
 const supplierSelect = document.getElementById('id_supplier');
 if(supplierSelect){supplierSelect.addEventListener('change', filterBatches);}
 
-if(factorySelect && factorySelect.value){refreshFactoryLinkedOptions();}
+// Only auto-refresh linked options on POST re-render, not on fresh page load
+if(!_pageIsClean && factorySelect && factorySelect.value){refreshFactoryLinkedOptions();}
 
 if (imageInput) {
   imageInput.addEventListener('change', async (e) => {
