@@ -3,6 +3,7 @@ import json
 import uuid
 import logging
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -229,3 +230,35 @@ def sample_decision(request, pk: int):
         )
         messages.success(request, "Supervisor decision recorded.")
     return redirect("sampling:sample-detail", pk=pk)
+
+
+@login_required
+def debug_storage(request):
+    """Diagnostic endpoint to check Cloudinary config at runtime."""
+    import cloudinary
+    import os
+    cloud_cfg = cloudinary.config()
+    has_url = bool(os.environ.get('CLOUDINARY_URL', ''))
+    storage_class = getattr(settings, 'DEFAULT_FILE_STORAGE', 'unknown')
+    cloud_storage = getattr(settings, 'CLOUDINARY_STORAGE', {})
+    # Check a recent sample's image URL
+    recent = FactoryIntakeSample.objects.exclude(leaf_image='').order_by('-id').first()
+    img_info = None
+    if recent:
+        img_info = {
+            'sample_id': recent.id,
+            'field_value': str(recent.leaf_image),
+            'url': recent.leaf_image.url if recent.leaf_image else None,
+            'storage_class': type(recent.leaf_image.storage).__name__,
+        }
+    return JsonResponse({
+        'env_CLOUDINARY_URL_set': has_url,
+        'env_CLOUDINARY_URL_prefix': os.environ.get('CLOUDINARY_URL', '')[:30] + '...' if has_url else None,
+        'DEFAULT_FILE_STORAGE': storage_class,
+        'CLOUDINARY_STORAGE': {k: v[:4]+'...' if v else v for k, v in cloud_storage.items()} if cloud_storage else None,
+        'cloudinary_config': {
+            'cloud_name': cloud_cfg.cloud_name or None,
+            'api_key': (cloud_cfg.api_key or '')[:6] + '...' if cloud_cfg.api_key else None,
+        },
+        'recent_image': img_info,
+    })

@@ -11,6 +11,7 @@ urlpatterns = [
     path("vault/", views.sync_vault_view, name="sync-vault"),
     path("prediction-preview/", views.prediction_preview, name="prediction-preview"),
     path("sync-submit/", views.sync_submit, name="sync-submit"),
+    path("debug-storage/", views.debug_storage, name="debug-storage"),
     path("<int:pk>/", views.sample_detail, name="sample-detail"),
     path("<int:pk>/decision/", views.sample_decision, name="sample-decision"),
 ]

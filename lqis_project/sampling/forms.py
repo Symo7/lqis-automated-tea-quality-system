@@ -28,6 +28,11 @@ class FactoryIntakeSampleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["intake_timestamp"].initial = timezone.now().strftime("%Y-%m-%dT%H:%M")
+        # Explicit placeholders so dropdowns never auto-select the first real option
+        self.fields["factory"].empty_label = "— Select Factory —"
+        self.fields["tea_buying_center"].empty_label = "— Select Buying Center —"
+        self.fields["supplier"].empty_label = "— Select Supplier —"
+        self.fields["batch"].empty_label = "— Select Batch —"
         self.fields["tea_buying_center"].queryset = TeaBuyingCenter.objects.none()
         self.fields["batch"].queryset = Batch.objects.none()
         self.fields["supplier"].queryset = Supplier.objects.all()
