@@ -154,9 +154,9 @@
     <div class="card"><div class="card-body">
       <h6>Recent Submissions</h6>
       {% if recent_samples %}
-      <div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>Batch</th><th>Factory</th><th>Quality</th><th></th></tr></thead><tbody>
+      <div class="table-responsive"><table class="table table-hover align-middle mb-0" style="min-width:0;"><thead><tr><th>Batch</th><th>Factory</th><th>Quality</th><th style="white-space:nowrap; width:1%;"></th></tr></thead><tbody>
       {% for s in recent_samples %}
-      <tr><td>{{ s.batch.batch_code }}</td><td>{{ s.factory.code }}</td><td><span class="badge-status status-{{ s.quality_status }}">{{ s.quality_status }}</span></td><td><a class="btn btn-sm btn-outline-success" href="{% url 'sampling:sample-detail' s.id %}">View</a></td></tr>
+      <tr><td style="word-break:break-all;">{{ s.batch.batch_code }}</td><td>{{ s.factory.code }}</td><td><span class="badge-status status-{{ s.quality_status }}">{{ s.quality_status }}</span></td><td style="white-space:nowrap;"><a class="btn btn-sm btn-outline-success text-nowrap" href="{% url 'sampling:sample-detail' s.id %}">View</a></td></tr>
       {% endfor %}
       </tbody></table></div>
       {% else %}<div class="empty-state">No samples recorded yet.</div>{% endif %}

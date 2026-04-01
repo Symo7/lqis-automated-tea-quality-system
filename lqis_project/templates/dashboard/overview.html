@@ -88,7 +88,7 @@
           <td>{{ s.factory.code }} / {{ s.tea_buying_center.code }}</td>
           <td>{{ s.batch.batch_code }}</td>
           <td><strong>{{ s.quality_score }}</strong> <span class="badge-status status-{{ s.quality_status }}">{{ s.quality_status }}</span></td>
-          <td><a class="btn btn-sm btn-success" href="{% url 'sampling:sample-detail' s.id %}">Decide &rarr;</a></td>
+          <td style="white-space:nowrap;"><a class="btn btn-sm btn-success text-nowrap" href="{% url 'sampling:sample-detail' s.id %}">Decide &rarr;</a></td>
         </tr>
         {% endfor %}
       </tbody>

@@ -22,7 +22,7 @@
 {% if samples %}
 <div class="table-responsive">
 <table class="table align-middle table-hover">
-  <thead><tr><th>Photo</th><th>Time</th><th>Factory</th><th>Batch Quality Score</th><th>Decision</th><th></th></tr></thead>
+  <thead><tr><th>Photo</th><th>Time</th><th>Factory</th><th>Batch Quality Score</th><th>Decision</th><th style="white-space:nowrap; width:1%;"></th></tr></thead>
   <tbody>
     {% for s in samples %}
     <tr>
@@ -31,7 +31,7 @@
       <td>{{ s.factory.code }} / {{ s.tea_buying_center.code }}</td>
       <td><strong>{{ s.quality_score }}</strong> <span class="badge-status status-{{ s.quality_status }}">{{ s.quality_status }}</span></td>
       <td>{{ s.decision|default:'Pending' }}</td>
-      <td><a class="btn btn-sm btn-outline-success" href="{% url 'sampling:sample-detail' s.id %}">Detail</a></td>
+      <td style="white-space:nowrap;"><a class="btn btn-sm btn-outline-success text-nowrap" href="{% url 'sampling:sample-detail' s.id %}">Detail</a></td>
     </tr>
     {% endfor %}
   </tbody>
