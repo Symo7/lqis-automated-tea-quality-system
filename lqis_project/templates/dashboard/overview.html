@@ -136,9 +136,15 @@
   <div class="col-lg-8"><div class="card"><div class="card-body"><h6>Decision Trend (7 Days)</h6><canvas id="decisionTrendChart"></canvas></div></div></div>
   <div class="col-lg-4"><div class="card"><div class="card-body"><h6>Recent Alerts</h6>
       {% for a in recent_alerts %}
-      <div class="alert {% if a.alert_type == 'LOW_PLUCK' %}alert-warning{% elif a.alert_type == 'HIGH_FOREIGN' %}alert-orange{% else %}alert-danger{% endif %} py-2 mb-2">
-        {{ a.sample.factory.code }} — {{ a.alert_type }} — {{ a.message }}
-      </div>
+      <a href="{% url 'sampling:sample-detail' a.sample.id %}" class="text-decoration-none d-block">
+        <div class="alert {% if a.alert_type == 'LOW_PLUCK' %}alert-warning{% elif a.alert_type == 'HIGH_FOREIGN' %}alert-orange{% else %}alert-danger{% endif %} py-2 mb-2" style="cursor:pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;" onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>{{ a.sample.factory.code }} — {{ a.alert_type }} — {{ a.message }}</span>
+            <span class="small opacity-75">→</span>
+          </div>
+          <small class="opacity-75">Sample #{{ a.sample.id }} · {{ a.created_at|date:'M d, H:i' }}</small>
+        </div>
+      </a>
       {% empty %}<div class="empty-state">No alerts.</div>{% endfor %}
   </div></div></div>
 </div>
