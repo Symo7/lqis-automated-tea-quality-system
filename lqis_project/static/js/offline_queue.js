@@ -214,6 +214,8 @@
     form.reset();
     await updateStatusUi();
     registerBackgroundSync();
+    // Notify form template to clean up image preview + re-populate selects
+    window.dispatchEvent(new CustomEvent('offlineSampleQueued'));
     return true;
   }
 

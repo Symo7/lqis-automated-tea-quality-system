@@ -59,33 +59,6 @@
 {% block scripts %}
 {{ block.super }}
 <script>
-// --- IndexedDB Offline Sync Queue Engine ---
-const DB_NAME = "lqis_database";
-const STORE_NAME = "sync_queue";
-
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
-    request.onerror = () => reject("IndexedDB Error");
-    request.onupgradeneeded = (e) => { e.target.result.createObjectStore(STORE_NAME, { keyPath: "local_id" }); };
-    request.onsuccess = (e) => resolve(e.target.result);
-  });
-}
-
-function saveToSyncQueue(payload) {
-  return openDB().then(db => new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    tx.objectStore(STORE_NAME).put(payload);
-    tx.oncomplete = resolve;tx.onerror = reject;
-  }));
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader(); r.readAsDataURL(file);
-    r.onload = () => resolve(r.result); r.onerror = reject;
-  });
-}
 
 const imageInput = document.getElementById('id_leaf_image');
 const preview = document.getElementById('preview');
@@ -249,58 +222,14 @@ function updateConnectionNote(){
 }
 window.addEventListener('online', updateConnectionNote); window.addEventListener('offline', updateConnectionNote); updateConnectionNote();
 
-const form = document.getElementById('samplingForm');
-form.addEventListener('submit', async (e) => {
-  if (!navigator.onLine) {
-    e.preventDefault(); // Stop native submission
-    const submitBtn = document.getElementById('submitBtn');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true; submitBtn.innerHTML = 'Queueing Offline...';
-
-    try {
-        const payload = {
-            local_id: 'sync_' + new Date().getTime() + '_' + Math.random().toString(36).substr(2,9),
-            factory: document.getElementById('id_factory').value,
-            tea_buying_center: document.getElementById('id_tea_buying_center').value,
-            supplier: document.getElementById('id_supplier').value,
-            batch: document.getElementById('id_batch').value,
-            intake_timestamp: document.getElementById('id_intake_timestamp').value,
-            moisture_pct: document.getElementById('id_moisture_pct').value,
-            foreign_matter_pct: document.getElementById('id_foreign_matter_pct').value,
-            notes: document.getElementById('id_notes').value,
-            manual_override_pluck_score: document.getElementById('id_manual_override_pluck_score').value,
-            image_data_url: ""
-        };
-
-        const file = document.getElementById('id_leaf_image').files[0];
-        if (file) { payload.image_data_url = await fileToBase64(file); }
-
-        await saveToSyncQueue(payload);
-        
-        // Reset the form silently so they can continue working without reloading the page
-        form.reset();
-        preview.classList.add('d-none');
-        predBox.innerHTML = '<span class="text-warning">Image queued directly to Sync Vault.</span>';
-        keepUpdatingTime = true; updateLiveTime();
-        
-        if (typeof window.showToast === 'function') {
-            window.showToast("You are offline. Sample capture securely saved to the Sync Vault!", "success");
-        } else {
-            alert("You are offline. Sample capture securely saved to the Sync Vault!");
-        }
-    } catch (err) {
-        if (typeof window.showToast === 'function') {
-            window.showToast("Failed to save offline. Please check your storage settings.", "danger");
-        } else {
-            alert("Failed to save offline. Please check your storage settings.");
-        }
-    } finally {
-        submitBtn.disabled = false; submitBtn.innerHTML = originalText;
-        // Re-populate selects from cache so the inspector can fill the next sample immediately
-        if (window.lqisOffline && window.lqisOffline.reloadFormFromCache) {
-          await window.lqisOffline.reloadFormFromCache();
-        }
-    }
+// Listen for successful offline saves from offline_queue.js to clean up the UI
+window.addEventListener('offlineSampleQueued', async () => {
+  if (preview) { preview.src = ''; preview.classList.add('d-none'); }
+  if (predBox) predBox.innerHTML = '<span class="text-warning">Image queued to Sync Vault.</span>';
+  keepUpdatingTime = true; updateLiveTime();
+  // Re-populate selects from cache so inspector can fill next sample immediately
+  if (window.lqisOffline && window.lqisOffline.reloadFormFromCache) {
+    await window.lqisOffline.reloadFormFromCache();
   }
 });
 </script>
