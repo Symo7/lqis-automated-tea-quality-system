@@ -133,7 +133,7 @@
   function fillSelect(select, options, labelFn, valueKey = 'id') {
     if (!select) return;
     const current = select.value;
-    select.innerHTML = '';
+    select.innerHTML = '<option value="">---------</option>';
     options.forEach((item) => {
       const opt = document.createElement('option');
       opt.value = item[valueKey];
@@ -143,6 +143,7 @@
     if (current) select.value = current;
   }
 
+  let _cacheListenerBound = false;
   async function applyCachedMasterDataToSamplingForm() {
     const form = document.getElementById('samplingForm');
     if (!form) return;
@@ -164,7 +165,10 @@
       fillSelect(centerSel, centers, (x) => `${x.name} (${x.code})`);
       fillSelect(batchSel, batches, (x) => x.batch_code);
     };
-    factorySel.addEventListener('change', bindFactory);
+    if (!_cacheListenerBound) {
+      factorySel.addEventListener('change', bindFactory);
+      _cacheListenerBound = true;
+    }
     bindFactory();
   }
 
@@ -308,6 +312,8 @@
     syncNow: syncQueuedSubmissions,
     queueOffline: queueCurrentFormOffline,
     getQueue: getAllQueue,
+    getMasterCache: getMasterDataCache,
+    reloadFormFromCache: applyCachedMasterDataToSamplingForm,
   };
 
   document.addEventListener('DOMContentLoaded', init);

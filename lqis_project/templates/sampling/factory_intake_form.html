@@ -124,11 +124,13 @@ window.addEventListener('pageshow', function(e) {
     window.location.reload();
     return;
   }
-  // Normal page load: reset immediately and again after Chrome's async autofill
-  resetFormFields();
-  setTimeout(resetFormFields, 100);
-  setTimeout(resetFormFields, 500);
-  setTimeout(resetFormFields, 1000);
+  // Only fight browser autofill when online — offline page is clean from SW cache
+  if (navigator.onLine) {
+    resetFormFields();
+    setTimeout(resetFormFields, 100);
+    setTimeout(resetFormFields, 500);
+    setTimeout(resetFormFields, 1000);
+  }
 });
 {% else %}
 let _pageIsClean = false;  // form has errors, don't block refreshFactoryLinkedOptions
@@ -184,19 +186,39 @@ function filterBatches() {
 }
 
 async function refreshFactoryLinkedOptions(){
-  if (!navigator.onLine) return;
   const f=factorySelect?.value; if(!f) return;
-  try {
-    const res=await fetch(`/sampling/factory-options/${f}/`); const data=await res.json();
-    if(centerSelect){
-      const currentCenter = centerSelect.value;
-      centerSelect.innerHTML='<option value="">---------</option>'; 
-      data.centers.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.text=`${c.name} (${c.code})`;centerSelect.appendChild(o);});
-      centerSelect.value = currentCenter;
-    }
-    allFactoryBatches = data.batches || [];
-    filterBatches();
-  } catch (_) {}
+  if (navigator.onLine) {
+    try {
+      const res=await fetch(`/sampling/factory-options/${f}/`); const data=await res.json();
+      if(centerSelect){
+        const currentCenter = centerSelect.value;
+        centerSelect.innerHTML='<option value="">---------</option>'; 
+        data.centers.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.text=`${c.name} (${c.code})`;centerSelect.appendChild(o);});
+        centerSelect.value = currentCenter;
+      }
+      allFactoryBatches = data.batches || [];
+      filterBatches();
+    } catch (_) {}
+  } else {
+    // OFFLINE: fall back to IndexedDB cached master data
+    try {
+      const cache = window.lqisOffline && window.lqisOffline.getMasterCache
+        ? await window.lqisOffline.getMasterCache()
+        : null;
+      if (!cache) return;
+      const fId = Number(f);
+      const centers = (cache.centers || []).filter(x => Number(x.factory_id) === fId);
+      const batches = (cache.batches || []).filter(x => Number(x.factory_id) === fId);
+      if (centerSelect) {
+        const currentCenter = centerSelect.value;
+        centerSelect.innerHTML = '<option value="">---------</option>';
+        centers.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.text = `${c.name} (${c.code})`; centerSelect.appendChild(o); });
+        centerSelect.value = currentCenter;
+      }
+      allFactoryBatches = batches.map(b => ({ id: b.id, batch_code: b.batch_code, buying_center_id: b.buying_center_id, supplier_id: b.supplier_id }));
+      filterBatches();
+    } catch (_) {}
+  }
 }
 
 if(factorySelect){factorySelect.addEventListener('change', refreshFactoryLinkedOptions);}
@@ -274,6 +296,10 @@ form.addEventListener('submit', async (e) => {
         }
     } finally {
         submitBtn.disabled = false; submitBtn.innerHTML = originalText;
+        // Re-populate selects from cache so the inspector can fill the next sample immediately
+        if (window.lqisOffline && window.lqisOffline.reloadFormFromCache) {
+          await window.lqisOffline.reloadFormFromCache();
+        }
     }
   }
 });
