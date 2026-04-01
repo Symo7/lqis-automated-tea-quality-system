@@ -97,6 +97,10 @@ class FactoryIntakeSample(models.Model):
                 self.prediction_confidence = Decimal(str(prediction["confidence"]))
             except Exception:
                 pass
+            # Reset file pointer after AI prediction consumed the stream,
+            # otherwise Cloudinary receives an empty file on upload.
+            if hasattr(self.leaf_image, 'seek'):
+                self.leaf_image.seek(0)
         # Fallback if prediction failed or no image was provided
         if not self.predicted_pluck_class:
             val = self.manual_override_pluck_score or 0

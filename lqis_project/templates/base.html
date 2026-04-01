@@ -62,9 +62,9 @@
 
 <main class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1320px; margin: 0 auto;">
   {% if messages %}
-    <div id="messageContainer" class="position-fixed top-0 end-0 mt-3 me-3" style="z-index: 1060; width: 380px; max-width: 90vw;">
+    <div id="messageContainer" class="position-fixed end-0" style="z-index: 1060; width: 420px; max-width: 92vw; top: 75px;">
     {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:'info' }} shadow-sm alert-dismissible fade show toast-enter mb-2" role="alert">
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} shadow-lg alert-dismissible fade show mb-2" role="alert" style="border-left: 4px solid; font-weight: 500;">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
@@ -78,7 +78,7 @@
         el.style.transform = 'translateY(-8px)';
         setTimeout(function() { el.remove(); }, 300);
       });
-    }, 3000);
+    }, 8000);
     </script>
   {% endif %}
 

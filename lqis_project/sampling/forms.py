@@ -36,6 +36,9 @@ class FactoryIntakeSampleForm(forms.ModelForm):
         self.fields["tea_buying_center"].queryset = TeaBuyingCenter.objects.none()
         self.fields["batch"].queryset = Batch.objects.none()
         self.fields["supplier"].queryset = Supplier.objects.all()
+        # Prevent Chrome from auto-restoring previous submissions
+        for field in self.fields.values():
+            field.widget.attrs.setdefault("autocomplete", "off")
 
         factory_id = self.data.get("factory") or self.initial.get("factory")
         if factory_id:

@@ -106,18 +106,29 @@ let _pageIsClean = true;  // flag to prevent refreshFactoryLinkedOptions on clea
 function resetFormFields() {
   const form = document.getElementById('samplingForm');
   if (form) form.reset();
-  if (factorySelect) factorySelect.selectedIndex = 0;
-  if (centerSelect) centerSelect.selectedIndex = 0;
-  if (batchSelect) batchSelect.selectedIndex = 0;
+  // Explicitly clear each select by value (more reliable than selectedIndex)
+  if (factorySelect) factorySelect.value = '';
+  if (centerSelect) centerSelect.value = '';
+  if (batchSelect) batchSelect.value = '';
+  const supplierEl = document.getElementById('id_supplier');
+  if (supplierEl) supplierEl.value = '';
   if (moistureInput) moistureInput.value = '';
   if (foreignInput) foreignInput.value = '';
   if (overrideInput) overrideInput.value = '';
   if (preview) preview.classList.add('d-none');
   _pageIsClean = true;
 }
-// 500ms delay beats Chrome's async autofill which ignores autocomplete='off'
 window.addEventListener('pageshow', function(e) {
+  if (e.persisted) {
+    // Page restored from bfcache (back/forward button) — force full reload
+    window.location.reload();
+    return;
+  }
+  // Normal page load: reset immediately and again after Chrome's async autofill
+  resetFormFields();
+  setTimeout(resetFormFields, 100);
   setTimeout(resetFormFields, 500);
+  setTimeout(resetFormFields, 1000);
 });
 {% else %}
 let _pageIsClean = false;  // form has errors, don't block refreshFactoryLinkedOptions
