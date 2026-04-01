@@ -16,7 +16,7 @@
         <div class="col-md-4">
           {% if sample.leaf_image %}
           <img src="{{ sample.leaf_image.url }}" class="img-fluid rounded w-100" style="max-height:280px; object-fit:cover; border:1px solid var(--border);" data-full="{{ sample.leaf_image.url }}" onerror="this.onerror=null; this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
-          <div class="img-fallback rounded text-center d-flex flex-column align-items-center justify-content-center" style="display:none; background:var(--surface-2); border:1px dashed var(--border); padding:24px; min-height:120px;">
+          <div class="img-fallback rounded text-center flex-column align-items-center justify-content-center" style="display:none; background:var(--surface-2); border:1px dashed var(--border); padding:24px; min-height:120px;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
             <span class="text-muted small mt-2">Image unavailable — may need re-upload</span>
           </div>
